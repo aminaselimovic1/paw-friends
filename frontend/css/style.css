@@ -257,6 +257,7 @@ h1, h2, h3, h4, h5, h6,
   padding: 6px 30px;
   border: 2px solid var(--color-accent);
   border-radius: 5px;
+  background-color: transparent;   /* a <button> has a grey background by default */
   color: var(--color-accent);
   font-size: 14px;
   font-weight: 700;
@@ -386,4 +387,55 @@ h1, h2, h3, h4, h5, h6,
   background-color: var(--color-accent);
   color: var(--color-white);
   font-size: 26px;
+}
+
+
+/* ---------- 16. My applications ---------- */
+.application-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;        /* the photo follows the card's rounded corners */
+}
+
+/* The photo fills its column: on top of the card on phones,
+   on the left from 576px up. Cream background if it's missing. */
+.application-photo {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+  background-color: var(--color-bg-alt);
+}
+
+/* Shown when no application matches the filter */
+.empty-state {
+  padding: 60px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-state-icon {
+  font-size: 56px;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 17. Profile ---------- */
+/* Round badge with the user's initials */
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* The role under the name, e.g. "User" */
+.role-badge {
+  background-color: var(--color-bg-alt);
+  color: var(--color-heading);
 }

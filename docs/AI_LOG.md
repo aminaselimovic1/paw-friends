@@ -56,6 +56,11 @@
   It found five small bugs, and listed what is still missing for M1 (14 views, ERD, README, commits and PR).
   I fixed 4 of the 5 bugs (see "Where the AI was wrong"), and decided not to fix the fifth (square eye-button corners).
 
+- Claude Code (same setup): built the My applications page.
+  Prompt: "Let's work on the My applications page. For our first functional version, implement these in order: 1. Page header and application count. 2. Application cards with pet photo, name, date, shelter, and status. 3. A View details action. 4. A status filter. 5. An empty state. 6. Optional withdrawal and status history, once the underlying logic exists."
+  It built items 1–5 with sample data in frontend/js/my-applications.js (same field names as the database) and a card <template> in the view, filled in with .text() so the data is never run as HTML. The router now fires a viewLoaded event after each view, so page scripts know when to draw. Item 6 waits for the backend, because withdrawal and status history need schema changes.
+  I kept it as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -86,3 +91,8 @@
   What was wrong: in Claude Code's role switcher, every role item was visible in the HTML until roles.js ran (after jQuery and Bootstrap had downloaded), so for a moment the links of every role were shown.
   How it was noticed: the reviewer agent found it when I asked it to check the whole project.
   How I fixed it: I first hid the items with a CSS rule (`[data-roles] { visibility: hidden; }`) and showed them again in roles.js. Claude Code's test showed that role-specific elements inside views loaded later would then stay invisible. I removed that, and asked Claude Code to start every role item with class="d-none" in index.html and to call showLinksFor(getRole()) in router.js after each view is loaded. Claude Code tested it: each role sees only its own links, no role item is visible before the scripts run, and role-specific elements inside views are shown only to their role.
+
+- The empty state on My applications touched the page header.
+  What was wrong: in Claude Code's first version, the empty-state box had no top margin. When no card matches the filter, the empty card row (Bootstrap's `row g-4`) keeps its negative top margin of −24px, which pulled the box up against the header.
+  How it was noticed: Claude Code saw it in a screenshot of the "Rejected" filter, before handing the page over.
+  How it was fixed: Claude Code added `mt-4` to the empty state and measured a 24px gap afterwards, the same as above the cards.

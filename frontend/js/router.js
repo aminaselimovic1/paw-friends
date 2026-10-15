@@ -39,6 +39,12 @@ function loadView(route) {
       $("#app").load("views/not-found.html");
     }
     window.scrollTo(0, 0);
+
+    // Tell the page scripts which view is now shown, so they can fill it in
+    // (e.g. my-applications.js draws its cards). Not sent if the file was missing.
+    if (status !== "error") {
+      $(document).trigger("viewLoaded", [route]);
+    }
   });
 
   highlightNavLink(route);

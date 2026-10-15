@@ -87,8 +87,15 @@
           </li>
 
           <!-- Vet only -->
-          <li class="nav-item d-none" data-roles="vet">
-            <a class="nav-link" href="#vet-dashboard"><i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Vet dashboard</a>
+          <li class="nav-item dropdown d-none" data-roles="vet">
+            <button type="button" class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Vet
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#vet-dashboard"><i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Dashboard</a></li>
+              <li><a class="dropdown-item" href="#profile"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
+            </ul>
           </li>
 
           <!-- Admin only -->
@@ -104,6 +111,8 @@
               <li><a class="dropdown-item" href="#manage-shelters"><i class="bi bi-buildings" aria-hidden="true"></i> Manage shelters</a></li>
               <li><a class="dropdown-item" href="#manage-users"><i class="bi bi-people" aria-hidden="true"></i> Manage users</a></li>
               <li><a class="dropdown-item" href="#manage-applications"><i class="bi bi-clipboard-check" aria-hidden="true"></i> Manage applications</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#profile"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
             </ul>
           </li>
         </ul>
@@ -192,6 +201,8 @@
   <script src="js/roles.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/contact.js"></script>
+  <script src="js/my-applications.js"></script>
+  <script src="js/profile.js"></script>
   <script src="js/router.js"></script>
 </body>
 </html>

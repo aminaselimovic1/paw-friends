@@ -31,8 +31,9 @@ $(document).on("change", "#roleSelect", function () {
   setRole($(this).val());
 });
 
-// "Log out" makes you a guest again (its link then goes to #home)
-$(document).on("click", "#logoutButton", function () {
+// "Log out" (in the navbar, or a .logout-action link in a view) makes you
+// a guest again. Its link then goes to #home.
+$(document).on("click", "#logoutButton, .logout-action", function () {
   setRole("guest");
 });
 
