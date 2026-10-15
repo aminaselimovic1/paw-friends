@@ -9,6 +9,9 @@ backend/logs/*
 # Composer dependencies, reinstalled with `composer install`.
 backend/vendor/
 
+# Personal Claude Code settings (shared agents and skills in .claude/ are committed)
+.claude/settings.local.json
+
 # OS and editor files
 .DS_Store
 .idea/
