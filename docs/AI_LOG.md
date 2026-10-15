@@ -43,6 +43,34 @@
   It created frontend/js/router.js, a hash router with jQuery. It loads views/<page>.html into <main id="app"> when the part after # changes. Only the 18 pages in its list can load, and a missing or unknown page shows the new frontend/views/not-found.html. It also highlights the current navbar link, scrolls to the top and closes the phone menu after a click. It added jQuery 3.7.1 to the shell, with an integrity hash. It tested the router in headless Chrome through XAMPP.
   I kept it as generated.
 
+- Claude Code (same setup): built the demo role switcher for the navbar and deleted the old root index.html.
+  Prompt 1: "What everyone should see: home.html, not-found.html, pets.html, pet-details.html (actions depend on the role), shelters.html, shelter-details.html, about.html, contact.html (…) What vet sees: vet-dashboard.html (…) Regarding the index.html that's outside of the frontend folder, you can delete it."
+  Claude Code deleted the old Hello World index.html (git rm). It then asked how the navbar should show role links before there is a login, and offered three options. I chose the demo role switcher.
+  Prompt 2: "Start with the role switcher. I added the images so that step is done as well."
+  It added a "Demo: view as" bar above the navbar (Guest / User / Vet / Admin) and frontend/js/roles.js. Navbar items have a data-roles attribute, and showLinksFor(role) hides the ones the role may not see. The role is saved in localStorage, and Log out switches back to Guest. User links are in a "My account" dropdown and admin links in an "Admin" dropdown. It put the switcher above the navbar, not inside it, because the navbar would have been too wide at 992px. It also overrode Bootstrap's dropdown states in style.css (an open toggle would turn black and an active item blue), and made the router highlight dropdown items. It tested every role in headless Chrome.
+  I kept it as generated.
+
+- Claude Code (same setup): resized the pet and hero photos.
+  Prompt: "Shrink copies with macOS's built-in sips (no new library). No need for the keyboard focus outline."
+  I added the 4 photos myself. Claude Code pointed out that they were 12 MB in total (up to 7,400px wide), and offered to resize them. It backed up the originals to a folder on my Desktop, outside the project, then resized them with sips: the hero to 1,920px wide and the pets to 800px, at JPEG quality 80. Together they went from 12 MB to 532 KB. It checked the result in a screenshot. I turned down its other suggestion, a terracotta keyboard focus outline.
+  I kept the resized photos.
+
+- Claude Code (same setup): built the login and register views.
+  Prompt: "Let's work on login and register. Register should have the following fields: Full name (2–100 characters, required), Email (type="email", required), Phone (optional, digits, spaces and +), Password (min 8) and confirm password (must match), both with a show/hide button, "I agree to the terms" checkbox (required). Login should have the following fields: Email (type="email", required) and Password (required) + show/hide button. There is no role field on register: every new account is a user."
+  I also pasted notes on what should happen after a valid submit. They were written for spapp and a RoleSwitcher object we don't have, so Claude Code asked whether to use them. I said yes, adapted to our code.
+  It created frontend/views/login.html, frontend/views/register.html and frontend/js/auth.js, and added form styles to style.css. The rules are HTML attributes (required, minlength, pattern, type="email") with Bootstrap's validation styles, and the password match is checked with setCustomValidity(). Login picks the demo role from the email (admin@example.com → admin, emina.vet@example.com → vet, others → user) and goes to #home. Register clears the form, hides revealed passwords again and shows a green "Account created!" message. It left out the notes' "hide the message on hashchange" step, because our router reloads the view on every navigation. It tested both forms in headless Chrome, except minlength, which browsers check only for real typing.
+  I kept it as generated. I checked minlength by hand: a one-letter name and a short password both show an error.
+
+- Claude Code (same setup, reviewer agent): reviewed the whole project against AGENTS.md and the Milestone 1 scope.
+  Prompt: "@agent-reviewer check everything up to this point and see if anything is missing."
+  It found five small bugs (home page says the shelter team approves applications instead of the admin, footer social links jump to Home, the phone menu stays open on the current page's link, role links flash on first load, square eye-button corners), two router limits to fix before pet-details (no ids, no role filter for loaded views), and what's missing for M1 (14 views, ERD, README, commits and PR). Claude Code checked its main findings before reporting them. It disagreed that the Phone field and the custom button classes break AGENTS.md.
+  4 of the 5 bugs are fixed (see "Where the AI was wrong"): I fixed the first three myself, and the fourth together with Claude Code. I decided not to fix the fifth (the eye-button corners). Of the two router limits, views loaded by the router now get the role filter (part of the fourth fix). Passing an id to pet-details is still open.
+
+- Claude Code (same setup): updated a comment in roles.js and made the router accept an id.
+  Prompt: "Update that line as well. Then make the router accept an id. We won't work on pets and pet-details yet, I will first commit the changes that we have so give me a short commit message."
+  It updated the comment above showLinksFor() in roles.js, because the function now also filters parts of views, not only navbar items. In router.js, getRouteFromHash() now ignores everything after "?", so "#pet-details?id=2" gives the route "pet-details". A new function, getHashParam(name), reads values after "?" with the browser's URLSearchParams: getHashParam("id") returns "2", or null if there is no id. It tested this in headless Chrome: ?id=2 and ?id=3 load pet-details with the right id, switching between them reloads the view, other pages still work, and "#../views/home" still shows not-found. It also gave me a short commit message. The "View details" links on Home don't pass an id yet; that's for the pets batch.
+  I kept it as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -53,3 +81,23 @@
   What was wrong: the heading rule in style.css (h1–h6: bold and brown) was weaker than Bootstrap's .h5 and .h6 classes, because a class beats a tag name. So <h3 class="h5"> (pet card and step titles) and <h2 class="h6"> (footer titles) had weight 500, and the card titles were grey instead of brown.
   How it was noticed: Claude Code noticed it in a screenshot while testing the router and confirmed it by measuring the styles in the browser.
   How it was fixed: I asked Claude Code to fix it ("Fix the headings first"). It added .h1–.h6 to the heading rule, and the measured styles were bold and brown afterwards.
+
+- The home page said the wrong role approves adoption applications.
+  What was wrong: step 3 of "How adoption works" (home.html, written by the frontend agent) said "The shelter team reviews your application and approves or rejects it". In PawFriends the admin approves or rejects applications (AGENTS.md), and there is no shelter-staff role.
+  How it was noticed: the reviewer agent found it when I asked it to check the whole project.
+  How I fixed it: I rewrote the step myself: "Our team reviews it" and "We will review your application and approve or reject it."
+
+- The footer's social media links jumped to the home page.
+  What was wrong: in the SPA shell, Claude Code used href="#" as a placeholder for the Facebook and Instagram links. With our hash router, "#" empties the hash, which the router treats as the home page, so clicking an icon on any page opened Home.
+  How it was noticed: the reviewer agent found it when I asked it to check the whole project.
+  How I fixed it: I changed the links myself to https://facebook.com and https://instagram.com and added target="_blank", so they open in a new tab.
+
+- The phone menu stayed open when tapping the link of the current page.
+  What was wrong: Claude Code's router closed the phone menu only when the hash changed. Tapping the link of the page you are already on (or Log out or the logo while on Home) doesn't change the hash, so the open menu stayed over the page.
+  How it was noticed: the reviewer agent found it when I asked it to check the whole project.
+  How I fixed it: I added a click handler in router.js that closes the open menu below 992px. Claude Code tested my fix and found that it missed dropdown items, Log out and the logo. I widened the selector to `#mainNav a, .navbar-brand`, and the test then passed for all of them.
+
+- Role-specific navbar links flashed on first load.
+  What was wrong: in Claude Code's role switcher, every role item was visible in the HTML until roles.js ran (after jQuery and Bootstrap had downloaded), so for a moment the links of every role were shown.
+  How it was noticed: the reviewer agent found it when I asked it to check the whole project.
+  How I fixed it: I first hid the items with a CSS rule (`[data-roles] { visibility: hidden; }`) and showed them again in roles.js. Claude Code's test showed that role-specific elements inside views loaded later would then stay invisible. I removed that, and asked Claude Code to start every role item with class="d-none" in index.html and to call showLinksFor(getRole()) in router.js after each view is loaded. Claude Code tested it: each role sees only its own links, no role item is visible before the scripts run, and role-specific elements inside views are shown only to their role.

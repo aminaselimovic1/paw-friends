@@ -1,0 +1,41 @@
+<!-- Login view (guests only). The form is handled in js/auth.js. -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <div class="form-card">
+          <h1 class="h3 text-center mb-4">Log in</h1>
+
+          <!-- novalidate: turns off the browser's own error bubbles,
+               so Bootstrap's error messages are shown instead -->
+          <form id="loginForm" novalidate>
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="loginEmail" name="email"
+                     autocomplete="email" required>
+              <div class="invalid-feedback">Enter a valid email address.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="loginPassword" class="form-label">Password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="loginPassword" name="password"
+                       autocomplete="current-password" required>
+                <button type="button" class="password-toggle" aria-label="Show password">
+                  <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+                <div class="invalid-feedback">Enter your password.</div>
+              </div>
+            </div>
+
+            <button type="submit" class="accent-button w-100">Log in</button>
+          </form>
+
+          <p class="text-center mt-4 mb-0">
+            Don't have an account? <a href="#register" class="text-link">Register</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

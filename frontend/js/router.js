@@ -11,10 +11,18 @@ const routes = [
   "manage-pets", "manage-shelters", "manage-users", "manage-applications"
 ];
 
-// "#pets" -> "pets". An empty hash means the home page.
+// "#pets" -> "pets", "#pet-details?id=2" -> "pet-details".
+// Everything after "?" is ignored here. An empty hash means the home page.
 function getRouteFromHash() {
-  const route = window.location.hash.substring(1);
+  const route = window.location.hash.substring(1).split("?")[0];
   return route === "" ? "home" : route;
+}
+
+// Reads a value after "?" in the hash, for example on "#pet-details?id=2"
+// getHashParam("id") returns "2". Returns null if the value isn't there.
+function getHashParam(name) {
+  const query = window.location.hash.split("?")[1] || "";
+  return new URLSearchParams(query).get(name);
 }
 
 function loadView(route) {
@@ -23,6 +31,9 @@ function loadView(route) {
   }
 
   $("#app").load("views/" + route + ".html", function (response, status) {
+    // The view's HTML is now in the page: show only its parts for this role
+    showLinksFor(getRole()); // from roles.js
+
     // The page is in the list, but its view file doesn't exist yet
     if (status === "error") {
       $("#app").load("views/not-found.html");
@@ -34,10 +45,11 @@ function loadView(route) {
   closeMobileMenu();
 }
 
-// Marks the navbar link of the current page
+// Marks the navbar link of the current page (also links inside dropdown menus)
 function highlightNavLink(route) {
-  $(".site-navbar .nav-link").removeClass("active").removeAttr("aria-current");
-  $('.site-navbar .nav-link[href="#' + route + '"]')
+  const navLinks = $(".site-navbar .nav-link, .site-navbar .dropdown-item");
+  navLinks.removeClass("active").removeAttr("aria-current");
+  navLinks.filter('[href="#' + route + '"]')
     .addClass("active")
     .attr("aria-current", "page");
 }
@@ -58,4 +70,16 @@ $(window).on("hashchange", function () {
 // ...and once when the page first opens
 $(document).ready(function () {
   loadView(getRouteFromHash());
+});
+
+// Close the mobile navbar when any navigation link is clicked
+$(document).on('click', '#mainNav a, .navbar-brand', function () {
+  const navbar = document.getElementById('mainNav');
+
+  // Only close the menu on mobile/tablet when it is expanded
+  if (window.innerWidth < 992 && navbar.classList.contains('show')) {
+    bootstrap.Collapse.getOrCreateInstance(navbar, {
+      toggle: false
+    }).hide();
+  }
 });

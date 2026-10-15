@@ -21,7 +21,27 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-  <!-- ===== Navbar (public links; role-specific links come later) ===== -->
+  <!-- ===== Demo bar (Milestone 1 only): there's no login yet, so this
+       chooses which role the navbar is shown for. Removed in M4. ===== -->
+  <div class="demo-bar py-1">
+    <div class="container d-flex justify-content-end align-items-center gap-2">
+      <label for="roleSelect" class="small">
+        <i class="bi bi-eye" aria-hidden="true"></i> Demo: view as
+      </label>
+      <select id="roleSelect" class="form-select form-select-sm w-auto">
+        <option value="guest">Guest</option>
+        <option value="user">User</option>
+        <option value="vet">Vet</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ===== Navbar =====
+       Items without data-roles are shown to everyone. Items with data-roles
+       are shown only to those roles (see js/roles.js). They start hidden
+       (d-none), so they don't flash before roles.js has run. -->
+
   <nav class="navbar navbar-expand-lg site-navbar sticky-top">
     <div class="container">
       <a class="navbar-brand site-brand" href="#home">
@@ -52,14 +72,53 @@
           <li class="nav-item">
             <a class="nav-link" href="#contact"><i class="bi bi-envelope" aria-hidden="true"></i> Contact</a>
           </li>
+
+          <!-- User only: a dropdown menu. The toggle is a <button>, not a link,
+               because it opens the menu instead of going to a page. -->
+          <li class="nav-item dropdown d-none" data-roles="user">
+            <button type="button" class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle" aria-hidden="true"></i> My account
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#my-applications"><i class="bi bi-clipboard-heart" aria-hidden="true"></i> My applications</a></li>
+              <li><a class="dropdown-item" href="#profile"><i class="bi bi-person" aria-hidden="true"></i> Profile</a></li>
+            </ul>
+          </li>
+
+          <!-- Vet only -->
+          <li class="nav-item d-none" data-roles="vet">
+            <a class="nav-link" href="#vet-dashboard"><i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Vet dashboard</a>
+          </li>
+
+          <!-- Admin only -->
+          <li class="nav-item dropdown d-none" data-roles="admin">
+            <button type="button" class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i> Admin
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#admin-dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i> Dashboard</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#manage-pets"><i class="bi bi-search-heart" aria-hidden="true"></i> Manage pets</a></li>
+              <li><a class="dropdown-item" href="#manage-shelters"><i class="bi bi-buildings" aria-hidden="true"></i> Manage shelters</a></li>
+              <li><a class="dropdown-item" href="#manage-users"><i class="bi bi-people" aria-hidden="true"></i> Manage users</a></li>
+              <li><a class="dropdown-item" href="#manage-applications"><i class="bi bi-clipboard-check" aria-hidden="true"></i> Manage applications</a></li>
+            </ul>
+          </li>
         </ul>
 
         <div class="d-flex gap-2 ms-lg-3 mb-3 mb-lg-0">
-          <a href="#login" class="outline-button">
+          <!-- Guests only -->
+          <a href="#login" class="outline-button d-none" data-roles="guest">
             <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Log in
           </a>
-          <a href="#register" class="accent-button">
+          <a href="#register" class="accent-button d-none" data-roles="guest">
             <i class="bi bi-person-plus" aria-hidden="true"></i> Register
+          </a>
+          <!-- Everyone who is logged in -->
+          <a href="#home" id="logoutButton" class="outline-button d-none" data-roles="user vet admin">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log out
           </a>
         </div>
       </div>
@@ -82,10 +141,10 @@
             health history for every pet.
           </p>
           <!-- Social links: placeholders until the project has real pages -->
-          <a href="#" class="footer-social me-3" aria-label="PawFriends on Facebook">
+          <a href="https://facebook.com" class="footer-social me-3" aria-label="PawFriends on Facebook" target="_blank">
             <i class="bi bi-facebook" aria-hidden="true"></i>
           </a>
-          <a href="#" class="footer-social" aria-label="PawFriends on Instagram">
+          <a href="https://instagram.com" class="footer-social" aria-label="PawFriends on Instagram" target="_blank">
             <i class="bi bi-instagram" aria-hidden="true"></i>
           </a>
         </div>
@@ -129,7 +188,9 @@
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
           crossorigin="anonymous"></script>
 
-  <!-- Our router: loaded last, because it uses jQuery and Bootstrap -->
+  <!-- Our scripts: loaded last, because they use jQuery and Bootstrap -->
+  <script src="js/roles.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/router.js"></script>
 </body>
 </html>

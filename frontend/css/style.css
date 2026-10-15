@@ -50,6 +50,7 @@ h1, h2, h3, h4, h5, h6,
 .accent-button {
   display: inline-block;
   padding: 8px 32px;
+  border: 0;               /* a <button> has a browser border by default */
   border-radius: 5px;
   background-color: var(--color-accent);
   color: var(--color-white);
@@ -228,10 +229,25 @@ h1, h2, h3, h4, h5, h6,
   color: var(--color-accent);
 }
 
-/* The current page's link (the router adds .active). Needed because
-   Bootstrap's .navbar-nav .nav-link.active rule would make it black. */
-.site-navbar .nav-link.active {
+/* The current page's link (the router adds .active), and a dropdown toggle
+   whose menu is open (Bootstrap adds .show). Needed because Bootstrap's
+   .navbar-nav .nav-link.active and .show rules would make them black. */
+.site-navbar .nav-link.active,
+.site-navbar .nav-link.show {
   color: var(--color-accent);
+}
+
+/* Dropdown menu items: Bootstrap's hover is grey and its .active is blue */
+.site-navbar .dropdown-item:hover,
+.site-navbar .dropdown-item:focus {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.site-navbar .dropdown-item.active,
+.site-navbar .dropdown-item:active {
+  background-color: var(--color-accent);
+  color: var(--color-white);
 }
 
 /* "Log in": outlined version of .accent-button.
@@ -287,8 +303,50 @@ h1, h2, h3, h4, h5, h6,
 }
 
 
-/* ---------- 12. Not-found view ---------- */
+/* ---------- 12. Demo bar (Milestone 1 only, above the navbar) ---------- */
+.demo-bar {
+  background-color: var(--color-heading);
+  color: var(--color-bg);
+}
+
+
+/* ---------- 13. Not-found view ---------- */
 .not-found-icon {
   font-size: 64px;
   color: var(--color-accent);
+}
+
+
+/* ---------- 14. Forms: login and register ---------- */
+/* The white box around a form */
+.form-card {
+  padding: 40px 30px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Eye button next to a password field. It uses the same border colour
+   as Bootstrap's fields, so it looks like part of the input. */
+.password-toggle {
+  padding: 0 14px;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+}
+
+/* Ticked checkbox: terracotta instead of Bootstrap's blue */
+.form-check-input:checked {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Links in running text, e.g. "Don't have an account? Register" */
+.text-link {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.text-link:hover {
+  color: var(--color-accent-dark);
 }
