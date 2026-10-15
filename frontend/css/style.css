@@ -350,3 +350,40 @@ h1, h2, h3, h4, h5, h6,
 .text-link:hover {
   color: var(--color-accent-dark);
 }
+
+
+/* ---------- 15. About page ---------- */
+/* A shorter hero: used together with .hero, and comes later in the file,
+   so its min-height wins over the 70vh of .hero */
+.hero-small {
+  min-height: 40vh;
+}
+
+/* A left-aligned section title: the underline starts at the left
+   instead of being centred (see .section-title h2::after in block 4) */
+.section-title-left h2::after {
+  margin-left: 0;
+}
+
+/* "Our mission" list: a terracotta tick before each point */
+.check-list i {
+  color: var(--color-accent);
+}
+
+/* "What PawFriends offers" cards */
+.feature-card {
+  padding: 30px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Round terracotta icon badge (offers cards and "Who we serve") */
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 26px;
+}
