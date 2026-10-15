@@ -1,0 +1,294 @@
+/* =========================================================
+   PawFriends - main stylesheet
+   Loaded once by the SPA shell, AFTER Bootstrap 5,
+   so these rules can override Bootstrap's defaults.
+   ========================================================= */
+
+/* Nunito font from Google Fonts (an @import must be the first rule in the file) */
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+
+/* ---------- 1. Colors and fonts (change them here, in one place) ---------- */
+:root {
+  --color-bg: #fffaf0;            /* main page background (light cream) */
+  --color-bg-alt: #f8efdc;        /* every other section (darker cream) */
+  --color-surface: #fffdf8;       /* cards and boxes */
+  --color-surface-transparent: rgba(255, 253, 248, 0.9); /* hero box, 90% opaque */
+  --color-text: #444444;          /* normal text */
+  --color-heading: #4a3b2f;       /* headings (warm dark brown) */
+  --color-accent: #a8552a;        /* buttons, numbers, underlines (terracotta) */
+  --color-accent-dark: #8a4420;   /* accent on hover */
+  --color-white: #ffffff;
+  --font-main: "Nunito", sans-serif;
+  --shadow-soft: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ---------- 2. General page styles ---------- */
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* .h1-.h6 too: otherwise Bootstrap's size classes (e.g. <h3 class="h5">)
+   set their own weight and colour, because a class beats a tag name */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+/* Background for every other section, so sections are easy to tell apart */
+.section-alt {
+  background-color: var(--color-bg-alt);
+}
+
+
+/* ---------- 3. Buttons (links styled as buttons) ---------- */
+/* Main accent button: "Browse pets", "View details" */
+.accent-button {
+  display: inline-block;
+  padding: 8px 32px;
+  border-radius: 5px;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.accent-button:hover {
+  background-color: var(--color-accent-dark);
+  color: var(--color-white);
+}
+
+
+/* ---------- 4. Section titles (heading with a short line under it) ---------- */
+.section-title h2 {
+  font-size: 32px;
+}
+
+/* The 50px x 3px accent line under the heading */
+.section-title h2::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  margin: 15px auto 0;
+  background-color: var(--color-accent);
+}
+
+
+/* ---------- 5. Home: hero ---------- */
+.hero {
+  min-height: 70vh;
+  background-color: var(--color-bg-alt);  /* shown until hero.jpg exists */
+  background-image: url("../assets/images/hero.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+/* The semi-transparent box in the middle of the hero */
+.hero-box {
+  padding: 30px 20px;
+  background-color: var(--color-surface-transparent);
+  border-top: 4px solid var(--color-accent);
+}
+
+.hero-box h1 {
+  font-size: 36px;
+}
+
+/* Phones and small tablets: smaller hero heading */
+@media (max-width: 768px) {
+  .hero-box h1 {
+    font-size: 30px;
+  }
+}
+
+
+/* ---------- 6. Home: stats ---------- */
+.stat-box {
+  padding: 30px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-number {
+  margin-bottom: 0;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 7. Home: featured pets ---------- */
+.pet-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s;
+}
+
+/* Hover: the card moves up a little and the pet's name turns accent */
+.pet-card:hover {
+  transform: translateY(-5px);
+}
+
+.pet-card:hover .card-title {
+  color: var(--color-accent);
+}
+
+/* Same height for every photo; cream background if the image is missing */
+.pet-card-img {
+  height: 220px;
+  object-fit: cover;
+  background-color: var(--color-bg-alt);
+}
+
+.pet-breed {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 8. Home: how adoption works ---------- */
+/* Numbered circle above each step */
+.step-number {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;       /* same as height, so the number is vertically centered */
+  border-radius: 50%;      /* turns the square into a circle */
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+/* ---------- 9. Home: call to action ---------- */
+.cta {
+  padding: 80px 0;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.cta h2 {
+  font-size: 28px;
+  color: var(--color-white);
+}
+
+/* White outline button; colors swap on hover */
+.cta-button {
+  display: inline-block;
+  padding: 12px 40px;
+  border: 2px solid var(--color-white);
+  border-radius: 4px;
+  color: var(--color-white);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: var(--color-white);
+  color: var(--color-accent);
+}
+
+
+/* ---------- 10. Navbar (shell, every page) ---------- */
+.site-navbar {
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* :focus is needed too: after a click the link keeps focus, and Bootstrap's
+   .navbar-brand:focus rule would otherwise turn it black */
+.site-brand,
+.site-brand:focus {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.site-brand:hover {
+  color: var(--color-accent-dark);
+}
+
+.site-navbar .nav-link {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.site-navbar .nav-link:hover {
+  color: var(--color-accent);
+}
+
+/* The current page's link (the router adds .active). Needed because
+   Bootstrap's .navbar-nav .nav-link.active rule would make it black. */
+.site-navbar .nav-link.active {
+  color: var(--color-accent);
+}
+
+/* "Log in": outlined version of .accent-button.
+   The 2px border is taken from the padding, so both buttons are the same size. */
+.outline-button {
+  display: inline-block;
+  padding: 6px 30px;
+  border: 2px solid var(--color-accent);
+  border-radius: 5px;
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.outline-button:hover {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+
+/* ---------- 11. Footer (shell, every page) ---------- */
+/* Same warm brown as the headings, with cream text */
+.site-footer {
+  background-color: var(--color-heading);
+  color: var(--color-bg);
+}
+
+.footer-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.footer-title {
+  color: var(--color-white);
+}
+
+.site-footer a {
+  color: var(--color-bg-alt);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.footer-social {
+  font-size: 20px;
+}
+
+
+/* ---------- 12. Not-found view ---------- */
+.not-found-icon {
+  font-size: 64px;
+  color: var(--color-accent);
+}
