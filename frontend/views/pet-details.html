@@ -154,7 +154,8 @@
 
   <!-- ===== Vet: "Add vet record" form in a Bootstrap modal =====
        Bootstrap's JS opens it (data-bs-toggle on the button) and closes it
-       (data-bs-dismiss); js/pet-details.js saves it. -->
+       (data-bs-dismiss); js/pet-details.js saves it. The vet dashboard has
+       the same two vet forms (same ids), so the same code saves them there. -->
   <div class="modal fade pet-modal" id="vetRecordModal" tabindex="-1"
        aria-labelledby="vetRecordModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -166,6 +167,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- The pet the record is for (set by JS) -->
+          <input type="hidden" id="vetRecordPetId">
           <div class="mb-3">
             <label for="visitDate" class="form-label">Visit date</label>
             <!-- max (today) is set by JS: a visit can't be in the future -->
@@ -216,6 +219,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <!-- The pet the vaccination is for (set by JS) -->
+          <input type="hidden" id="vaccinationPetId">
           <div class="mb-3">
             <label for="vaccineName" class="form-label">Vaccine</label>
             <input type="text" class="form-control" id="vaccineName" maxlength="100"

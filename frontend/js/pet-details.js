@@ -11,7 +11,9 @@
 // Same field names as the planned vet_records and vaccinations tables.
 // vet_name is not a column: it comes from the users table (the vet), like
 // shelter_name on the pets. null = no value (NULL in the database); those
-// fields are never shown. Pets 4-12 have no records yet.
+// fields are never shown. Oliver, Mia, Buddy and Coco have no records yet.
+// Some next_due_date values are close to October 2026, so the vet dashboard
+// has follow-ups to show (they become overdue as time passes).
 const sampleVetRecords = [
   {
     id: 1, pet_id: 1, vet_id: 2, vet_name: "Dr. Emina Mehić", visit_date: "2026-08-14",
@@ -32,6 +34,26 @@ const sampleVetRecords = [
     id: 4, pet_id: 3, vet_id: 4, vet_name: "Dr. Adnan Begić", visit_date: "2026-09-22",
     reason: "Scratching his left ear", diagnosis: "Mild ear infection",
     treatment: "Ear drops twice a day for 7 days", notes: "Check again if it comes back."
+  },
+  {
+    id: 5, pet_id: 5, vet_id: 2, vet_name: "Dr. Emina Mehić", visit_date: "2026-07-10",
+    reason: "Kitten check-up", diagnosis: "Healthy",
+    treatment: null, notes: "Booster vaccine due in three months."
+  },
+  {
+    id: 6, pet_id: 9, vet_id: 4, vet_name: "Dr. Adnan Begić", visit_date: "2026-09-30",
+    reason: "Stiff back legs in the morning", diagnosis: "Mild arthritis (age-related)",
+    treatment: "Joint supplement once a day", notes: "Short walks only."
+  },
+  {
+    id: 7, pet_id: 4, vet_id: 2, vet_name: "Dr. Emina Mehić", visit_date: "2026-10-02",
+    reason: "Puppy check-up", diagnosis: "Healthy",
+    treatment: "Deworming tablet", notes: null
+  },
+  {
+    id: 8, pet_id: 8, vet_id: 2, vet_name: "Dr. Emina Mehić", visit_date: "2026-10-12",
+    reason: "Watery left eye", diagnosis: "Mild conjunctivitis",
+    treatment: "Eye drops twice a day for 5 days", notes: null
   }
 ];
 
@@ -54,6 +76,24 @@ const sampleVaccinations = [
     id: 4, pet_id: 3, vet_id: 4, vet_name: "Dr. Adnan Begić",
     vaccine_name: "DHPP (distemper, hepatitis, parvovirus, parainfluenza)",
     date_given: "2025-08-01", next_due_date: null
+  },
+  {
+    id: 5, pet_id: 5, vet_id: 2, vet_name: "Dr. Emina Mehić",
+    vaccine_name: "FVRCP (cat flu and feline distemper)",
+    date_given: "2026-07-10", next_due_date: "2026-10-10"
+  },
+  {
+    id: 6, pet_id: 4, vet_id: 2, vet_name: "Dr. Emina Mehić",
+    vaccine_name: "DHPP (distemper, hepatitis, parvovirus, parainfluenza)",
+    date_given: "2026-07-25", next_due_date: "2026-10-24"
+  },
+  {
+    id: 7, pet_id: 9, vet_id: 4, vet_name: "Dr. Adnan Begić", vaccine_name: "Rabies",
+    date_given: "2025-11-05", next_due_date: "2026-11-05"
+  },
+  {
+    id: 8, pet_id: 6, vet_id: 4, vet_name: "Dr. Adnan Begić", vaccine_name: "Rabies",
+    date_given: "2026-03-15", next_due_date: "2027-03-15"
   }
 ];
 
@@ -165,6 +205,8 @@ function renderPetDetails() {
   const badge = petStatusBadges[pet.status];
   // The name also appears in headings, the guest text and the modal titles
   $(".detail-pet-name").text(pet.name);
+  // The vet forms save their records for this pet
+  $("#vetRecordPetId, #vaccinationPetId").val(pet.id);
   $(".detail-breed-name").text(pet.breed_name);
   $("#detailName").text(pet.name);
   // attr("class") replaces all classes, so an old colour can't stay after an edit
@@ -223,19 +265,35 @@ function finishDetailForm(form, message) {
   $("#detailSaved").text(message).removeClass("d-none");
 }
 
+// The two vet forms are on this page AND on the vet dashboard (same ids), so
+// the code below saves them for both. After saving it closes the form and
+// announces "healthRecordSaved" (our own event, like the router's viewLoaded):
+// the page that is open redraws itself and shows the message.
+function finishHealthForm(form, message) {
+  bootstrap.Modal.getInstance($(form).closest(".modal")[0]).hide();
+  $(document).trigger("healthRecordSaved", [message]);
+}
+
+// This page's answer to "healthRecordSaved" (the vet dashboard has its own)
+$(document).on("healthRecordSaved", function (e, message) {
+  if (getRouteFromHash() === "pet-details") { // from router.js
+    renderPetDetails();
+    $("#detailSaved").text(message).removeClass("d-none");
+  }
+});
+
+// The pet a vet form is for: its id is in the form's hidden field
+function getHealthFormPet(hiddenFieldSelector) {
+  const petId = Number($(hiddenFieldSelector).val());
+  return samplePets.find(function (pet) {
+    return pet.id === petId;
+  });
+}
+
 // Whenever a modal closes (saved, Cancel, X, Esc or a click outside it):
 // empty its form, so it opens clean next time
 $(document).on("hidden.bs.modal", ".pet-modal", function () {
   resetForm($(this).find("form")[0]); // from auth.js
-});
-
-// Leaving the page while a modal is open (e.g. the browser's Back button):
-// close it, otherwise its dark backdrop (added to <body>, outside the view)
-// would stay over the next page
-$(window).on("hashchange", function () {
-  $(".pet-modal.show").each(function () {
-    bootstrap.Modal.getInstance(this).hide();
-  });
 });
 
 // Vet: "Add vet record"
@@ -249,9 +307,10 @@ $(document).on("submit", "#vetRecordForm", function (e) {
   // Demo (M1): added to the sample array, kept until the page is reloaded.
   // In M4 this becomes a request to the API, and the database gives the id.
   // Optional fields left empty become null ("" || null -> null).
+  const pet = getHealthFormPet("#vetRecordPetId");
   sampleVetRecords.push({
     id: sampleVetRecords.length + 1,
-    pet_id: getDetailPet().id,
+    pet_id: pet.id,
     vet_id: demoVet.id,
     vet_name: demoVet.name,
     visit_date: $("#visitDate").val(),
@@ -260,7 +319,7 @@ $(document).on("submit", "#vetRecordForm", function (e) {
     treatment: $("#visitTreatment").val().trim() || null,
     notes: $("#visitNotes").val().trim() || null
   });
-  finishDetailForm(this, "Vet record added.");
+  finishHealthForm(this, "Vet record added for " + pet.name + ".");
 });
 
 // "Next due" (optional) must be after "Date given". The same idea as the
@@ -285,16 +344,17 @@ $(document).on("submit", "#vaccinationForm", function (e) {
   }
 
   // Demo (M1): added to the sample array (see "Add vet record")
+  const pet = getHealthFormPet("#vaccinationPetId");
   sampleVaccinations.push({
     id: sampleVaccinations.length + 1,
-    pet_id: getDetailPet().id,
+    pet_id: pet.id,
     vet_id: demoVet.id,
     vet_name: demoVet.name,
     vaccine_name: $("#vaccineName").val().trim(),
     date_given: $("#vaccineDateGiven").val(),
     next_due_date: $("#vaccineNextDue").val() || null
   });
-  finishDetailForm(this, "Vaccination added.");
+  finishHealthForm(this, "Vaccination added for " + pet.name + ".");
 });
 
 // Admin: "Edit pet details" opens, so copy the pet's current values into the form

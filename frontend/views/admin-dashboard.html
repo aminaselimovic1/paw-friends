@@ -1,0 +1,137 @@
+<!-- Admin dashboard view (admin): an overview, the applications waiting for
+     review, and links to the manage pages. Milestone 1 uses sample data from
+     the other pages' scripts; js/admin-dashboard.js draws this page. -->
+
+<section class="admin-page py-5">
+  <div class="container">
+
+    <!-- ===== Welcome header ===== -->
+    <div class="mb-4">
+      <h1 class="mb-1">Welcome back, <span id="adminFirstName"></span></h1>
+      <!-- e.g. "Friday, 16 October 2026 · 6 applications are waiting for review." -->
+      <p id="adminOverview" class="mb-0 text-body-secondary"></p>
+    </div>
+
+    <!-- ===== Summary cards =====
+         align-items-start: the content starts at the top of every card, so the
+         numbers line up even when one card's small text takes two lines -->
+    <div class="row g-4 mb-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="form-card detail-card h-100 d-flex align-items-start gap-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center flex-shrink-0">
+            <i class="bi bi-clipboard-heart" aria-hidden="true"></i>
+          </div>
+          <div>
+            <p id="adminPendingCount" class="stat-number"></p>
+            <p class="fw-bold mb-0">To review</p>
+            <p class="small text-body-secondary mb-0">Pending applications</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="form-card detail-card h-100 d-flex align-items-start gap-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center flex-shrink-0">
+            <i class="bi bi-search-heart" aria-hidden="true"></i>
+          </div>
+          <div>
+            <p id="adminAvailableCount" class="stat-number"></p>
+            <p class="fw-bold mb-0">Available pets</p>
+            <p class="small text-body-secondary mb-0">Looking for a home</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="form-card detail-card h-100 d-flex align-items-start gap-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center flex-shrink-0">
+            <i class="bi bi-house-heart" aria-hidden="true"></i>
+          </div>
+          <div>
+            <p id="adminAdoptedCount" class="stat-number"></p>
+            <p class="fw-bold mb-0">Adopted</p>
+            <p class="small text-body-secondary mb-0">Pets that found a home</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="form-card detail-card h-100 d-flex align-items-start gap-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center flex-shrink-0">
+            <i class="bi bi-people" aria-hidden="true"></i>
+          </div>
+          <div>
+            <p id="adminUserCount" class="stat-number"></p>
+            <p class="fw-bold mb-0">Users</p>
+            <p class="small text-body-secondary mb-0">Registered adopters</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- ===== Applications waiting for review (oldest first: first come, first served) ===== -->
+      <div class="col-lg-8">
+        <div class="form-card detail-card h-100">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="h5 mb-0">
+              <i class="bi bi-clipboard-heart" aria-hidden="true"></i> Applications waiting for review
+            </h2>
+            <a href="#manage-applications" class="text-link">See all applications</a>
+          </div>
+
+          <!-- position-relative keeps the hidden "Actions" label inside the scrolling box -->
+          <div id="adminPendingTableWrapper" class="table-responsive position-relative">
+            <table class="table align-middle mb-0 admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Applicant</th>
+                  <th scope="col">Pet</th>
+                  <th scope="col">Applied</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="adminPendingTableBody"></tbody>
+            </table>
+          </div>
+          <p id="adminNoPending" class="mb-0 text-body-secondary d-none">
+            No applications are waiting for review.
+          </p>
+        </div>
+      </div>
+
+      <!-- ===== Links to the manage pages, with how many items each has ===== -->
+      <div class="col-lg-4">
+        <div class="form-card detail-card h-100">
+          <h2 class="h5 mb-3">Manage</h2>
+          <!-- list-group: Bootstrap's list of links; list-group-flush removes its outer border -->
+          <div class="list-group list-group-flush admin-manage-links">
+            <a href="#manage-pets" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-search-heart" aria-hidden="true"></i> Pets</span>
+              <span id="adminPetTotal" class="badge role-badge"></span>
+            </a>
+            <a href="#manage-shelters" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-buildings" aria-hidden="true"></i> Shelters</span>
+              <span id="adminShelterTotal" class="badge role-badge"></span>
+            </a>
+            <a href="#manage-users" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-people" aria-hidden="true"></i> Users</span>
+              <span id="adminAccountTotal" class="badge role-badge"></span>
+            </a>
+            <a href="#manage-applications" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              <span><i class="bi bi-clipboard-heart" aria-hidden="true"></i> Applications</span>
+              <span id="adminApplicationTotal" class="badge role-badge"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- One pending application. "Review" opens it on the applications page. -->
+  <template id="adminPendingRowTemplate">
+    <tr>
+      <td class="fw-bold pending-applicant"></td>
+      <td><a class="text-link pending-pet"></a></td>
+      <td class="pending-date"></td>
+      <td class="text-end"><a class="text-link pending-review">Review</a></td>
+    </tr>
+  </template>
+</section>

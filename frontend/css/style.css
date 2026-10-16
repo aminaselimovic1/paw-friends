@@ -306,6 +306,13 @@ h1, h2, h3, h4, h5, h6,
   font-size: 20px;
 }
 
+/* No underline on the social icons: the rule above underlines footer links
+   on hover, and the space after the Facebook icon showed up as a "_".
+   .site-footer .footer-social:hover (3 classes) beats .site-footer a:hover. */
+.site-footer .footer-social:hover {
+  text-decoration: none;
+}
+
 
 /* ---------- 12. Demo bar (Milestone 1 only, above the navbar) ---------- */
 .demo-bar {
@@ -343,6 +350,13 @@ h1, h2, h3, h4, h5, h6,
 .form-check-input:checked {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
+}
+
+/* DEMO (M1 only, remove in M4): the box with the demo accounts on Log in */
+.demo-accounts {
+  padding: 16px;
+  border-radius: 5px;
+  background-color: var(--color-bg-alt);
 }
 
 /* Links in running text, e.g. "Don't have an account? Register" */
@@ -584,4 +598,61 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 5px;
   box-shadow: var(--shadow-soft);
   font-family: var(--font-main);
+}
+
+
+/* ---------- 22. Vet dashboard ---------- */
+/* Terracotta icons in the box headings and the recent activity list */
+.vet-dashboard .detail-card h2 .bi,
+.activity-icon {
+  color: var(--color-accent);
+}
+
+.activity-icon {
+  font-size: 20px;
+}
+
+/* The table takes the white box's colour instead of Bootstrap's white cells.
+   Bootstrap's tables read their colours from variables like this one. */
+.vet-table {
+  --bs-table-bg: transparent;
+}
+
+/* "Find a pet" and "View your patients" scroll here. The navbar is sticky
+   (about 56px high), so without this it would cover the top of the box. */
+.vet-pet-records {
+  scroll-margin-top: 70px;
+}
+
+
+/* ---------- 23. Admin dashboard and manage pages ---------- */
+/* Terracotta icons in the box headings and in the "Manage" links */
+.admin-page .detail-card h2 .bi,
+.admin-manage-links .bi {
+  color: var(--color-accent);
+}
+
+/* The tables take the white box's colour instead of Bootstrap's white cells */
+.admin-table {
+  --bs-table-bg: transparent;
+}
+
+/* A <button> that looks like a text link (Edit, Delete, Review): it does
+   something on the page instead of going to another page, so it's a button.
+   Used together with .text-link for the colour. */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+}
+
+/* The "Manage" links: no white background, cream when hovered */
+.admin-manage-links .list-group-item {
+  background-color: transparent;
+}
+
+.admin-manage-links .list-group-item:hover,
+.admin-manage-links .list-group-item:focus {
+  background-color: var(--color-bg-alt);
 }

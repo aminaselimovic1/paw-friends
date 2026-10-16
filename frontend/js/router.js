@@ -73,6 +73,15 @@ $(window).on("hashchange", function () {
   loadView(getRouteFromHash());
 });
 
+// Leaving a page while a Bootstrap modal is open (e.g. with the browser's
+// Back button): close it, otherwise its dark backdrop (added to <body>,
+// outside the view) would stay over the next page. Works for every page.
+$(window).on("hashchange", function () {
+  $(".modal.show").each(function () {
+    bootstrap.Modal.getInstance(this).hide();
+  });
+});
+
 // ...and once when the page first opens
 $(document).ready(function () {
   loadView(getRouteFromHash());

@@ -6,14 +6,35 @@
         <div class="form-card">
           <h1 class="h3 text-center mb-4">Log in</h1>
 
+          <!-- DEMO (Milestone 1 only, remove in M4): accounts for testing the
+               login. The email decides the role (getDemoRoleForEmail in
+               js/auth.js); the password isn't checked until the backend exists,
+               so no password is written in our JavaScript.
+               user-select-all (Bootstrap): one click selects the whole email. -->
+          <div class="demo-accounts small mb-4">
+            <p class="fw-bold mb-2">
+              <i class="bi bi-info-circle" aria-hidden="true"></i> Demo accounts
+            </p>
+            <ul class="list-unstyled mb-2">
+              <li><strong>User:</strong> <span class="user-select-all">lejla@example.com</span></li>
+              <li><strong>Vet:</strong> <span class="user-select-all">emina.vet@example.com</span></li>
+              <li><strong>Admin:</strong> <span class="user-select-all">admin@example.com</span></li>
+            </ul>
+            <p class="mb-0">
+              <strong>Password:</strong> <span class="user-select-all">demo1234</span>
+              <span class="text-body-secondary">(not checked until the backend exists)</span>
+            </p>
+          </div>
+
           <!-- novalidate: turns off the browser's own error bubbles,
                so Bootstrap's error messages are shown instead -->
           <form id="loginForm" novalidate>
             <div class="mb-3">
               <label for="loginEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="loginEmail" name="email"
+              <!-- pattern: the email also needs a dot and an ending like .com (type="email" alone accepts "a@a") -->
+              <input type="email" class="form-control" id="loginEmail" pattern="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}" name="email"
                      autocomplete="email" required>
-              <div class="invalid-feedback">Enter a valid email address.</div>
+              <div class="invalid-feedback">Enter a valid email address, e.g. name@example.com.</div>
             </div>
 
             <div class="mb-4">

@@ -56,9 +56,10 @@
 
             <div class="mb-3">
               <label for="editEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="editEmail" name="email"
+              <!-- pattern: the email also needs a dot and an ending like .com (type="email" alone accepts "a@a") -->
+              <input type="email" class="form-control" id="editEmail" pattern="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}" name="email"
                      autocomplete="email" required>
-              <div class="invalid-feedback">Enter a valid email address.</div>
+              <div class="invalid-feedback">Enter a valid email address, e.g. name@example.com.</div>
             </div>
 
             <div class="mb-3">

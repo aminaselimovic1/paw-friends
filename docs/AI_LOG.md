@@ -81,6 +81,20 @@
   It created frontend/views/shelter-details.html and frontend/js/shelter-details.js: the full description (the Shelters cards now cut it to 3 lines), contact details, opening hours (hidden when a shelter has none) and the available pets, using the Pets page's card function. It explained that Google Maps needs an API key with billing, and I chose "We can use OpenStreetMap with the Leaflet library". It added Leaflet 1.9.4 with checked integrity hashes, coordinates for the sample shelters, and a map with a pin. Opening hours and coordinates are new sample fields, noted for M2. At my request, it also added Leaflet to the Technology stack in AGENTS.md.
   I kept it as generated.
 
+- Claude Code (same setup): built the vet dashboard.
+  Prompt: "Let's work on the vet dashboard. It should include the following: Welcome header: “Welcome back, Dr. [Name]” with a short overview. Summary cards: Total assigned pets, health records updated, upcoming appointments (only if appointments are implemented), and pets needing follow-up. (…) Notifications or follow-ups: Highlight pets requiring another visit or vaccination when that information exists."
+  It created frontend/views/vet-dashboard.html and frontend/js/vet-dashboard.js with a welcome header, summary cards, follow-ups from the vaccinations' next due dates, a searchable pet records table, recent activity and quick actions. It left out the appointments card because the project has no appointments, and worked out "your patients" from the vet's own records because there is no assigned vet. It also added 8 sample health records.
+  I kept it as generated, except that the "Add" buttons later had to stay on the dashboard (see the bug fixes below).
+
+- Claude Code (same setup): built the admin dashboard and the manage pages.
+  Prompt: "Let's just create pages for everything we are missing and I will later do a big manual testing session where I will report any bugs that I find. Let's move onto the admin dashboard; you can add whatever makes sense here, but since the home page steps say that "our team reviews your applications", there should probably be and applications table."
+  It created the admin dashboard and the manage applications, pets, shelters and users pages. Applications are reviewed in a modal: approving marks the pet as adopted and rejects the other pending applications for it. Pets, shelters and users can be added, edited and deleted, but not deleted when other records point to them. All applications are now in one list, so My applications shows the admin's decisions. Lejla's application for Max became "rejected" to match Max still being available.
+  I kept it as generated.
+
+- Claude Code (same setup): fixed the bugs from my manual testing.
+  Prompt: "Here are some bugs / improvements that I've noticed." (with my bug report of 5 items)
+  It fixed the footer icons, the underline on the Facebook icon, emails like "a@a" being accepted, and the dashboard numbers at different heights (see "Where the AI was wrong"). On my request, the vet dashboard's "Add" buttons now open the forms on the dashboard instead of going to the pet's page. Before testing, I had also asked for demo accounts on the login card: "for testing Login, add an email and password on the card (for now, will be removed later) so that we can check what a successful login with a correct email and password looks like." It shows one account per role, and the password is still not checked.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -126,3 +140,28 @@
   What was wrong: Claude Code gave the "Vaccinations" and "Vet visits" heading icons the class `text-accent`, which exists neither in Bootstrap nor in style.css, so the icons would not have been terracotta.
   How it was noticed: Claude Code noticed it right after writing the view, and a search confirmed that the class isn't defined anywhere.
   How it was fixed: Claude Code removed the class and coloured the icons with a rule in style.css (`.detail-card h3 .bi`).
+
+- The vet dashboard was wider than a phone screen (vet dashboard).
+  What was wrong: at phone width (390px) the page was 466px wide and scrolled sideways. The hidden "Actions" header in the pet table uses Bootstrap's visually-hidden class (position: absolute), so it wasn't kept inside the table's scrolling box.
+  How it was noticed: Claude Code's own width check at 390px, before handing the page over.
+  How it was fixed: Claude Code added position-relative to the table's box.
+
+- The footer's contact icons weren't aligned (SPA shell).
+  What was wrong: the location pin icon Claude Code chose (bi-geo-alt) is narrower than the phone and envelope icons, so it looked indented.
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it. Claude Code measured the icons, confirmed that the pin starts about 2px further right, and replaced it with the map icon (bi-map).
+
+- The Facebook icon showed a "_" when hovered (SPA shell).
+  What was wrong: the footer CSS underlines links on hover, and the space after the Facebook icon inside the link was underlined.
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it, and Claude Code added a rule that removes the underline from the social icons.
+
+- Email fields accepted "a@a" (login, register, contact and the other forms).
+  What was wrong: the forms relied only on type="email", which accepts addresses without a dot.
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it, and Claude Code added a pattern to all six email fields that also requires a dot and an ending like .com, with a clearer error message.
+
+- The numbers in the dashboard summary cards weren't at the same height (vet and admin dashboards).
+  What was wrong: the cards centred their content vertically, so in a card whose small text took two lines, the number moved up.
+  How I noticed: during my manual testing of the vet dashboard; I asked for the admin dashboard to be checked too.
+  How it was fixed: Claude Code aligned the content to the top of the cards (align-items-start) on both dashboards.

@@ -1,0 +1,173 @@
+<!-- Manage shelters view (admin): every shelter, with search, and add /
+     edit / delete in modals. Milestone 1 uses sample data
+     (js/manage-shelters.js); changes are kept until the page is reloaded
+     and show up on the Shelters pages too. -->
+
+<section class="admin-page py-5">
+  <div class="container">
+    <!-- ===== Header: back link, title, count and "Add shelter" ===== -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <a href="#admin-dashboard" class="text-link d-inline-block mb-2">
+          <i class="bi bi-arrow-left" aria-hidden="true"></i> Admin dashboard
+        </a>
+        <h1 class="h2 mb-1">Manage shelters</h1>
+        <!-- aria-live: screen readers read the new count when the search changes -->
+        <p id="manageShelterCount" class="mb-0 text-body-secondary" aria-live="polite"></p>
+      </div>
+      <button type="button" id="addShelterButton" class="accent-button">
+        <i class="bi bi-plus-circle" aria-hidden="true"></i> Add shelter
+      </button>
+    </div>
+
+    <!-- After a save or delete; JS sets the text -->
+    <div id="manageShelterSaved" class="alert alert-success d-none" role="status"></div>
+
+    <div class="form-card detail-card">
+      <!-- The list updates while you type, so there's no submit button -->
+      <form id="manageShelterFilters" class="mb-3" role="search" aria-label="Search shelters">
+        <label for="manageShelterSearch" class="form-label">Search by name or city</label>
+        <input type="search" id="manageShelterSearch" class="form-control" placeholder="e.g. Mostar" autocomplete="off">
+      </form>
+
+      <!-- table-responsive: on phones the table scrolls sideways inside this box.
+           position-relative keeps the hidden "Actions" label inside it too. -->
+      <div id="manageShelterTableWrapper" class="table-responsive position-relative">
+        <table class="table align-middle mb-0 admin-table">
+          <thead>
+            <tr>
+              <th scope="col">Shelter</th>
+              <th scope="col">City</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Email</th>
+              <th scope="col">Pets</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="manageShelterTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Shown by JS when no shelter matches -->
+      <div id="manageShelterEmpty" class="text-center py-4 d-none">
+        <p class="mb-3">No shelters match your search.</p>
+        <button type="button" id="manageShelterClear" class="outline-button">
+          <i class="bi bi-x-circle" aria-hidden="true"></i> Clear search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Add / edit a shelter (one modal for both) =====
+       #manageShelterId is empty for a new shelter, or the id of the one being edited. -->
+  <div class="modal fade" id="shelterFormModal" tabindex="-1" aria-labelledby="shelterFormTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <form id="shelterForm" class="modal-content" novalidate>
+        <div class="modal-header">
+          <h2 id="shelterFormTitle" class="modal-title h5"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="manageShelterId">
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="shelterFormName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="shelterFormName" minlength="2" maxlength="100" required>
+              <div class="invalid-feedback">Enter a name (2–100 characters).</div>
+            </div>
+            <div class="col-sm-7">
+              <label for="shelterFormAddress" class="form-label">Address</label>
+              <input type="text" class="form-control" id="shelterFormAddress" maxlength="150" required>
+              <div class="invalid-feedback">Enter the street and number.</div>
+            </div>
+            <div class="col-sm-5">
+              <label for="shelterFormCity" class="form-label">City</label>
+              <input type="text" class="form-control" id="shelterFormCity" maxlength="100" required>
+              <div class="invalid-feedback">Enter the city.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="shelterFormPhone" class="form-label">Phone</label>
+              <!-- pattern: only digits, spaces and + (like on register) -->
+              <input type="tel" class="form-control" id="shelterFormPhone" pattern="[0-9+ ]+" required>
+              <div class="invalid-feedback">Use only digits, spaces and +.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="shelterFormEmail" class="form-label">Email</label>
+              <!-- pattern: the email also needs a dot and an ending like .com (type="email" alone accepts "a@a") -->
+              <input type="email" class="form-control" id="shelterFormEmail" pattern="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}" required>
+              <div class="invalid-feedback">Enter a valid email address, e.g. name@example.com.</div>
+            </div>
+            <div class="col-12">
+              <label for="shelterFormDescription" class="form-label">
+                Description <span class="text-body-secondary">(optional)</span>
+              </label>
+              <textarea class="form-control" id="shelterFormDescription" rows="3" maxlength="500"></textarea>
+            </div>
+            <div class="col-12">
+              <label for="shelterFormHours" class="form-label">
+                Opening hours <span class="text-body-secondary">(optional, one line per day group)</span>
+              </label>
+              <textarea class="form-control" id="shelterFormHours" rows="3" maxlength="300"
+                        placeholder="Monday–Friday: 9:00–17:00"></textarea>
+            </div>
+            <!-- The map on the shelter's page needs both, or neither (JS checks it) -->
+            <div class="col-sm-6">
+              <label for="shelterFormLatitude" class="form-label">
+                Latitude <span class="text-body-secondary">(optional)</span>
+              </label>
+              <input type="number" class="form-control" id="shelterFormLatitude" min="-90" max="90" step="any"
+                     placeholder="e.g. 43.8563">
+              <div id="shelterLatitudeFeedback" class="invalid-feedback">Enter a number from -90 to 90.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="shelterFormLongitude" class="form-label">
+                Longitude <span class="text-body-secondary">(optional)</span>
+              </label>
+              <input type="number" class="form-control" id="shelterFormLongitude" min="-180" max="180" step="any"
+                     placeholder="e.g. 18.4131">
+              <div class="invalid-feedback">Enter a number from -180 to 180.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="outline-button" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="accent-button">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Delete a shelter: asks first, or explains why it isn't possible ===== -->
+  <div class="modal fade" id="shelterDeleteModal" tabindex="-1" aria-labelledby="shelterDeleteTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="shelterDeleteTitle" class="modal-title h5"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p id="shelterDeleteText" class="mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="outline-button" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="confirmDeleteShelter" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- One row of the shelters table -->
+  <template id="manageShelterRowTemplate">
+    <tr>
+      <td><a class="text-link managed-shelter-name"></a></td>
+      <td class="managed-shelter-city"></td>
+      <td class="managed-shelter-phone text-nowrap"></td>
+      <td class="managed-shelter-email"></td>
+      <td class="managed-shelter-pets"></td>
+      <td class="text-end text-nowrap">
+        <button type="button" class="link-button text-link me-3 edit-shelter">Edit</button>
+        <button type="button" class="link-button text-link delete-shelter">Delete</button>
+      </td>
+    </tr>
+  </template>
+</section>
