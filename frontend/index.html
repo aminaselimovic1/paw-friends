@@ -16,7 +16,13 @@
         integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+"
         crossorigin="anonymous">
 
-  <!-- Our styles: loaded after Bootstrap, so they can override it -->
+  <!-- Leaflet: the map on the shelter details page (map images from OpenStreetMap) -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+        crossorigin="anonymous">
+
+  <!-- Our styles: loaded after Bootstrap and Leaflet, so they can override them -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -197,7 +203,12 @@
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
           crossorigin="anonymous"></script>
 
-  <!-- Our scripts: loaded last, because they use jQuery and Bootstrap -->
+  <!-- Leaflet's JavaScript (the map on shelter details); it creates the global L -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+          crossorigin="anonymous"></script>
+
+  <!-- Our scripts: loaded last, because they use jQuery, Bootstrap and Leaflet -->
   <script src="js/roles.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/contact.js"></script>
@@ -205,6 +216,8 @@
   <script src="js/profile.js"></script>
   <script src="js/pets.js"></script>
   <script src="js/pet-details.js"></script>
+  <script src="js/shelters.js"></script>
+  <script src="js/shelter-details.js"></script>
   <script src="js/router.js"></script>
 </body>
 </html>

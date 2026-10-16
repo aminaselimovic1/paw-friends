@@ -71,6 +71,16 @@
   Before building, it asked me three questions. I chose sample vet records and vaccinations, the vet and admin forms in modals, a spot for the breed info, and fixing Home's "View details" links. It created frontend/views/pet-details.html and frontend/js/pet-details.js. The page finds the pet from the link (#pet-details?id=2) and hides fields and sections that have no data. Guests get a login link and users an "Apply to adopt" button, which only explains that nothing is sent yet. Vets can add vet records and vaccinations, and admins can edit the pet, in Bootstrap modals that save to the sample data until a reload.
   I kept it as generated.
 
+- Claude Code (same setup): built the Shelters page.
+  Prompt: "Let's work on the shelters page. The page should include: Search and filters: Search shelters by name or location, with optional filters for available animal types. Shelter cards: Display each shelter’s name, image or logo, location, short description, contact information, and a “View Details” button. Navigation: Provide a clear way to browse pets from a selected shelter. (…)"
+  It created frontend/views/shelters.html and frontend/js/shelters.js with 4 sample shelters, a search by name or location, an "Available animals" filter, the shelter's initials as its logo, and an empty state. "Browse pets" opens the Pets page with a new Shelter filter set to that shelter (#pets?shelter=2). It moved 5 sample pets to the 2 new shelters so the animal filter has something to filter, and noted shelters.description as a schema decision for M2.
+  I kept it as generated.
+
+- Claude Code (same setup): built the shelter details page with a map.
+  Prompt: "Let's work on shelter-details first. For this page: Show the shelter’s full description, address, contact details, operating hours (if available), and pets available for adoption. Later on, we could also use the Google Maps API to display a map that shows the "exact location" of the shelter."
+  It created frontend/views/shelter-details.html and frontend/js/shelter-details.js: the full description (the Shelters cards now cut it to 3 lines), contact details, opening hours (hidden when a shelter has none) and the available pets, using the Pets page's card function. It explained that Google Maps needs an API key with billing, and I chose "We can use OpenStreetMap with the Leaflet library". It added Leaflet 1.9.4 with checked integrity hashes, coordinates for the sample shelters, and a map with a pin. Opening hours and coordinates are new sample fields, noted for M2. At my request, it also added Leaflet to the Technology stack in AGENTS.md.
+  I kept it as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.

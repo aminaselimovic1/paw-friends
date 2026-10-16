@@ -521,3 +521,67 @@ h1, h2, h3, h4, h5, h6,
   padding-top: 16px;
   border-top: 1px solid var(--bs-border-color);
 }
+
+
+/* ---------- 20. Shelters ---------- */
+/* The same look as the pet cards, without the hover movement */
+.shelter-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* The shelter's "logo": its initials in a terracotta circle.
+   border-radius: 50% turns the square into a circle. */
+.shelter-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Terracotta icons in front of the location, address, phone, email and pets */
+.shelter-card .card-body .bi {
+  color: var(--color-accent);
+}
+
+/* The cards show at most 3 lines of the description, ending in "…"; the
+   shelter's details page shows all of it. -webkit-line-clamp is the usual
+   way to do this and works in all modern browsers (it needs the two lines
+   above it); line-clamp is the newer standard name for the same thing.
+   Screen readers still read the whole text. */
+.shelter-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+
+/* ---------- 21. Shelter details ---------- */
+/* A bigger logo in the page header. Used together with .shelter-logo
+   (block 20) and comes later in the file, so these sizes win. */
+.shelter-logo-lg {
+  width: 80px;
+  height: 80px;
+  font-size: 28px;
+}
+
+/* Terracotta icons in the contact box */
+.shelter-contact .bi {
+  color: var(--color-accent);
+}
+
+/* The map box. Leaflet needs it to have a height, otherwise the map is 0px
+   high. Our font instead of Leaflet's (in the popup): this file comes after
+   leaflet.css, so this wins over its .leaflet-container rule. */
+.shelter-map {
+  height: 320px;
+  border-radius: 5px;
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-main);
+}

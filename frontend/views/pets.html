@@ -7,7 +7,7 @@
   <div class="container">
     <div class="section-title text-center mb-4">
       <h1>Pets looking for a home</h1>
-      <p class="mb-0">Search by name, or narrow the list by animal, age, sex and status.</p>
+      <p class="mb-0">Search by name, or narrow the list by shelter, animal, age, sex and status.</p>
     </div>
 
     <!-- ===== B. Search and filters =====
@@ -15,10 +15,19 @@
          The list updates while you type or choose, so there's no submit button. -->
     <form id="petFilters" class="form-card pet-filters mb-4" role="search" aria-label="Search and filter pets">
       <div class="row g-3">
-        <div class="col-12">
+        <div class="col-md-8">
           <label for="petSearch" class="form-label">Search by name</label>
           <input type="search" id="petSearch" class="form-control"
                  placeholder="e.g. Luna" autocomplete="off">
+        </div>
+
+        <!-- One option per shelter, added by js/pets.js. A link from the
+             Shelters page (#pets?shelter=2) chooses that shelter. -->
+        <div class="col-md-4">
+          <label for="petShelterFilter" class="form-label">Shelter</label>
+          <select id="petShelterFilter" class="form-select">
+            <option value="all">All shelters</option>
+          </select>
         </div>
 
         <!-- Phones: one per row. Tablets: two per row. Desktop: all four in a row. -->

@@ -1,0 +1,112 @@
+<!-- Shelters view: visible to everyone. Milestone 1 uses sample data.
+     The cards, the search and the filter are handled by js/shelters.js;
+     the cards are made from the <template> at the bottom. -->
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-title text-center mb-4">
+      <h1>Our partner shelters</h1>
+      <p class="mb-0">Find a shelter near you and meet the pets it's caring for.</p>
+    </div>
+
+    <!-- ===== Search and filter =====
+         role="search" marks this as the page's search area for screen readers.
+         The list updates while you type or choose, so there's no submit button. -->
+    <form id="shelterFilters" class="form-card p-4 mb-4" role="search" aria-label="Search and filter shelters">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label for="shelterSearch" class="form-label">Search by name or location</label>
+          <input type="search" id="shelterSearch" class="form-control"
+                 placeholder="e.g. Mostar" autocomplete="off">
+        </div>
+        <!-- Only pets with the status "available" count -->
+        <div class="col-md-4">
+          <label for="shelterAnimalFilter" class="form-label">Available animals</label>
+          <select id="shelterAnimalFilter" class="form-select">
+            <option value="all">Any animals</option>
+            <option value="dog">Has dogs</option>
+            <option value="cat">Has cats</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <!-- ===== Count and "Clear filters" ===== -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <!-- aria-live: screen readers read the new count when the filters change -->
+      <p id="shelterCount" class="mb-0 text-body-secondary" aria-live="polite"></p>
+      <button type="button" class="outline-button clear-shelter-filters">
+        <i class="bi bi-x-circle" aria-hidden="true"></i> Clear filters
+      </button>
+    </div>
+
+    <!-- ===== Shelter cards (filled in by JS) ===== -->
+    <div id="shelterList" class="row g-4"></div>
+
+    <!-- ===== Empty state: shown by JS when no shelter matches =====
+         mt-4: the empty card row above keeps its g-4 negative top margin -->
+    <div id="shelterEmptyState" class="empty-state text-center mt-4 d-none">
+      <i class="bi bi-buildings empty-state-icon" aria-hidden="true"></i>
+      <p class="h5 mt-3">No shelters match your search.</p>
+      <p class="mb-4">Try another name or city, or clear the filters to see all shelters.</p>
+      <button type="button" class="accent-button clear-shelter-filters">Clear filters</button>
+    </div>
+  </div>
+
+  <!-- One shelter card. A <template> is never shown: JS copies it for every
+       shelter and fills in the empty parts. The icons are decorative
+       (aria-hidden); the visually-hidden labels tell screen readers what
+       each line is. -->
+  <template id="shelterCardTemplate">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shelter-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <!-- The "logo": the shelter's initials (there are no logo images yet) -->
+            <div class="shelter-logo d-flex align-items-center justify-content-center flex-shrink-0"
+                 aria-hidden="true"></div>
+            <div>
+              <h2 class="card-title h5 mb-0 shelter-name"></h2>
+              <p class="mb-0 text-body-secondary">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                <span class="shelter-city"></span>
+              </p>
+            </div>
+          </div>
+
+          <p class="shelter-description"></p>
+
+          <ul class="list-unstyled mb-3">
+            <li>
+              <i class="bi bi-house-door" aria-hidden="true"></i>
+              <span class="visually-hidden">Address:</span>
+              <span class="shelter-address"></span>
+            </li>
+            <li>
+              <i class="bi bi-telephone" aria-hidden="true"></i>
+              <span class="visually-hidden">Phone:</span>
+              <a class="text-link shelter-phone"></a>
+            </li>
+            <li>
+              <i class="bi bi-envelope" aria-hidden="true"></i>
+              <span class="visually-hidden">Email:</span>
+              <a class="text-link shelter-email"></a>
+            </li>
+          </ul>
+
+          <!-- "2 dogs and 1 cat available" or "No pets available right now" -->
+          <p class="fw-bold mb-0">
+            <i class="bi bi-heart" aria-hidden="true"></i>
+            <span class="shelter-pets"></span>
+          </p>
+        </div>
+
+        <!-- "Browse pets" is hidden by JS when the shelter has no available pets -->
+        <div class="card-footer bg-transparent border-0 pb-3 d-flex flex-wrap gap-2">
+          <a class="accent-button shelter-details-link" href="#shelter-details">View details</a>
+          <a class="outline-button shelter-pets-link" href="#pets">Browse pets</a>
+        </div>
+      </div>
+    </div>
+  </template>
+</section>

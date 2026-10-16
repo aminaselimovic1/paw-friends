@@ -10,6 +10,7 @@
 
 // Same field names as the planned pets table (snake_case). shelter_name is
 // not a pets column: it comes from the shelters table, like in My applications.
+// shelter_id is the id of a shelter in sampleShelters (shelters.js).
 // There's no age column: the age is worked out from birth_date (see below),
 // so it's never out of date. Pets without a photo have photo_url: null.
 const samplePets = [
@@ -38,19 +39,19 @@ const samplePets = [
     description: "A sweet, cuddly puppy who is learning her first commands. She gets along well with other dogs."
   },
   {
-    id: 5, shelter_id: 1, shelter_name: "Happy Paws Shelter",
+    id: 5, shelter_id: 4, shelter_name: "Whisker Haven Cat Rescue",
     name: "Milo", species: "cat", breed_name: "Siamese", sex: "male",
     birth_date: "2026-04-03", photo_url: null, status: "available",
     description: "A chatty little kitten full of energy. He loves chasing toys and then curling up on a warm lap."
   },
   {
-    id: 6, shelter_id: 2, shelter_name: "Second Chance Rescue",
+    id: 6, shelter_id: 3, shelter_name: "Safe Haven Shelter",
     name: "Daisy", species: "dog", breed_name: "Border Collie", sex: "female",
     birth_date: "2021-09-05", photo_url: null, status: "available",
     description: "A smart, hard-working dog who needs daily exercise and games. Best with an experienced owner."
   },
   {
-    id: 7, shelter_id: 2, shelter_name: "Second Chance Rescue",
+    id: 7, shelter_id: 4, shelter_name: "Whisker Haven Cat Rescue",
     name: "Oliver", species: "cat", breed_name: "Maine Coon", sex: "male",
     birth_date: "2017-11-22", photo_url: null, status: "available",
     description: "A gentle senior cat who loves naps and soft blankets. He would be happiest in a quiet home."
@@ -62,7 +63,7 @@ const samplePets = [
     description: "A shy but loving cat who warms up quickly once she trusts you. Perfect for a calm household."
   },
   {
-    id: 9, shelter_id: 2, shelter_name: "Second Chance Rescue",
+    id: 9, shelter_id: 3, shelter_name: "Safe Haven Shelter",
     name: "Charlie", species: "dog", breed_name: "German Shepherd", sex: "male",
     birth_date: "2017-01-10", photo_url: null, status: "pending",
     description: "A loyal, well-trained older dog who knows many commands. He enjoys short walks and lots of attention."
@@ -80,7 +81,7 @@ const samplePets = [
     description: "A happy, gentle dog who loves everyone he meets. His tail never stops wagging."
   },
   {
-    id: 12, shelter_id: 2, shelter_name: "Second Chance Rescue",
+    id: 12, shelter_id: 4, shelter_name: "Whisker Haven Cat Rescue",
     name: "Coco", species: "cat", breed_name: "Ragdoll", sex: "female",
     birth_date: "2026-03-01", photo_url: null, status: "adopted",
     description: "A fluffy, relaxed kitten who loves being held. She purrs as soon as you pick her up."
@@ -173,9 +174,28 @@ function createPetCard(pet) {
   return card;
 }
 
+// The Shelter filter: one <option> per shelter in sampleShelters (shelters.js).
+// A link from the Shelters page (#pets?shelter=2) chooses that shelter, but
+// only if a shelter with that id exists; otherwise "All shelters" stays.
+function fillPetShelterFilter() {
+  const select = $("#petShelterFilter");
+  sampleShelters.forEach(function (shelter) {
+    select.append($("<option>").val(shelter.id).text(shelter.name));
+  });
+
+  const shelterId = getHashParam("shelter"); // from router.js: "2", or null
+  const shelterExists = sampleShelters.some(function (shelter) {
+    return String(shelter.id) === shelterId;
+  });
+  if (shelterExists) {
+    select.val(shelterId);
+  }
+}
+
 // The pets that match the search AND every filter
 function getFilteredPets() {
   const search = $("#petSearch").val().trim().toLowerCase();
+  const shelter = $("#petShelterFilter").val(); // "all" or a shelter id, e.g. "2"
   const species = $("#petSpeciesFilter").val(); // "all", "dog" or "cat"
   const ageGroup = $("#petAgeFilter").val();    // "all", "baby", "young", "adult" or "senior"
   const sex = $("#petSexFilter").val();         // "all", "male" or "female"
@@ -183,7 +203,9 @@ function getFilteredPets() {
 
   return samplePets.filter(function (pet) {
     // An empty search ("") is part of every name, so it matches all pets
+    // The select's value is text ("2") and shelter_id a number (2): Number() first
     return pet.name.toLowerCase().includes(search)
+      && (shelter === "all" || pet.shelter_id === Number(shelter))
       && (species === "all" || pet.species === species)
       && (ageGroup === "all" || getPetAgeGroup(getPetAgeInMonths(pet.birth_date)) === ageGroup)
       && (sex === "all" || pet.sex === sex)
@@ -263,11 +285,12 @@ function showFirstPetPage() {
 // The router announces every loaded view; draw the cards when it's this one
 $(document).on("viewLoaded", function (e, route) {
   if (route === "pets") {
+    fillPetShelterFilter();
     showFirstPetPage();
   }
 });
 
-// The list updates while typing, and when any of the four selects changes
+// The list updates while typing, and when any of the five selects changes
 $(document).on("input", "#petSearch", showFirstPetPage);
 $(document).on("change", "#petFilters select", showFirstPetPage);
 
@@ -287,7 +310,9 @@ $(document).on("submit", "#petFilters", function (e) {
 
 // "Clear filters" (above the cards and in the empty state).
 // reset() puts every field back to its value in the HTML: an empty search,
-// "All ..." in three selects and "Available" in the status select.
+// "All ..." in four selects and "Available" in the status select.
+// (Shelter goes back to "All shelters": an option chosen by JS doesn't count
+// as the HTML value.)
 // It doesn't fire "input" or "change", so the cards are redrawn here.
 $(document).on("click", ".clear-pet-filters", function () {
   document.getElementById("petFilters").reset();

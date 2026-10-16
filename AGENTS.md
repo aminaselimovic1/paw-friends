@@ -7,7 +7,7 @@ Entities: users, shelters, pets, adoption_applications, vet_records, vaccination
 External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temperament, life span, origin, photo); the pet's species decides which API is called.
 
 ## Technology stack
-- Frontend: HTML, CSS, JavaScript, jQuery, Bootstrap 5, Bootstrap Icons, single-page application (SPA)
+- Frontend: HTML, CSS, JavaScript, jQuery, Bootstrap 5, Bootstrap Icons, Leaflet with OpenStreetMap (the map on shelter details), single-page application (SPA)
 - Backend: PHP with FlightPHP (REST API), PDO, MySQL
 - Authentication: JWT. API documentation: OpenAPI (Swagger)
 - Local server: XAMPP
