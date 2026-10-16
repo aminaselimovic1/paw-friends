@@ -1,0 +1,142 @@
+<!-- Pets view: visible to everyone. Milestone 1 uses sample data.
+     The cards, the search, the filters and the pages are handled by
+     js/pets.js; the cards and page buttons are made from the <template>s
+     at the bottom. -->
+
+<section class="py-5">
+  <div class="container">
+    <div class="section-title text-center mb-4">
+      <h1>Pets looking for a home</h1>
+      <p class="mb-0">Search by name, or narrow the list by animal, age, sex and status.</p>
+    </div>
+
+    <!-- ===== B. Search and filters =====
+         role="search" marks this as the page's search area for screen readers.
+         The list updates while you type or choose, so there's no submit button. -->
+    <form id="petFilters" class="form-card pet-filters mb-4" role="search" aria-label="Search and filter pets">
+      <div class="row g-3">
+        <div class="col-12">
+          <label for="petSearch" class="form-label">Search by name</label>
+          <input type="search" id="petSearch" class="form-control"
+                 placeholder="e.g. Luna" autocomplete="off">
+        </div>
+
+        <!-- Phones: one per row. Tablets: two per row. Desktop: all four in a row. -->
+        <div class="col-sm-6 col-lg-3">
+          <label for="petSpeciesFilter" class="form-label">Animal type</label>
+          <select id="petSpeciesFilter" class="form-select">
+            <option value="all">All animals</option>
+            <option value="dog">Dogs</option>
+            <option value="cat">Cats</option>
+          </select>
+        </div>
+
+        <!-- The age groups are worked out in getPetAgeGroup() in js/pets.js.
+             Whole years, like the age shown on the cards. -->
+        <div class="col-sm-6 col-lg-3">
+          <label for="petAgeFilter" class="form-label">Age</label>
+          <select id="petAgeFilter" class="form-select">
+            <option value="all">All ages</option>
+            <option value="baby">Baby (under 1 year)</option>
+            <option value="young">Young (1–2 years)</option>
+            <option value="adult">Adult (3–7 years)</option>
+            <option value="senior">Senior (8+ years)</option>
+          </select>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+          <label for="petSexFilter" class="form-label">Sex</label>
+          <select id="petSexFilter" class="form-select">
+            <option value="all">Any sex</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <!-- "selected": visitors first see only the pets they can adopt.
+             form.reset() ("Clear filters") also comes back to this option. -->
+        <div class="col-sm-6 col-lg-3">
+          <label for="petStatusFilter" class="form-label">Adoption status</label>
+          <select id="petStatusFilter" class="form-select">
+            <option value="available" selected>Available</option>
+            <option value="pending">Pending</option>
+            <option value="adopted">Adopted</option>
+            <option value="all">All statuses</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <!-- ===== Count and "Clear filters" =====
+         Choosing another page scrolls back up to here (js/pets.js) -->
+    <div id="petResults" class="pet-results d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <!-- aria-live: screen readers read the new count when the filters change -->
+      <p id="petCount" class="mb-0 text-body-secondary" aria-live="polite"></p>
+      <button type="button" class="outline-button clear-pet-filters">
+        <i class="bi bi-x-circle" aria-hidden="true"></i> Clear filters
+      </button>
+    </div>
+
+    <!-- ===== C. Pet cards (filled in by JS) ===== -->
+    <div id="petList" class="row g-4"></div>
+
+    <!-- ===== Pagination: 6 pets per page =====
+         The buttons are made by JS. Hidden while everything fits on one page. -->
+    <nav id="petPagination" class="mt-4 d-none" aria-label="Pet list pages">
+      <ul class="pagination pet-pagination justify-content-center flex-wrap mb-0"></ul>
+    </nav>
+
+    <!-- ===== Empty state: shown by JS when no pet matches =====
+         mt-4: the empty card row above keeps its g-4 negative top margin,
+         which would otherwise pull this box up against the count -->
+    <div id="petEmptyState" class="empty-state text-center mt-4 d-none">
+      <i class="bi bi-search-heart empty-state-icon" aria-hidden="true"></i>
+      <p class="h5 mt-3">No pets match your filters.</p>
+      <p class="mb-4">Try another name, or clear the filters to see all available pets.</p>
+      <button type="button" class="accent-button clear-pet-filters">Clear filters</button>
+    </div>
+  </div>
+
+  <!-- One pet card. A <template> is never shown: JS copies it for every pet
+       and fills in the empty parts. It has both a photo and a "Photo coming
+       soon" box; JS removes the one the pet doesn't need. -->
+  <template id="petCardTemplate">
+    <div class="col-md-6 col-lg-4">
+      <div class="card pet-card h-100">
+        <img class="card-img-top pet-card-img pet-photo" src="" alt="">
+        <div class="card-img-top pet-card-img pet-photo-placeholder d-flex flex-column align-items-center justify-content-center gap-2">
+          <i class="bi bi-camera" aria-hidden="true"></i>
+          <span>Photo coming soon</span>
+        </div>
+
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+            <h3 class="card-title h5 mb-0 pet-name"></h3>
+            <span class="badge pet-status"></span>
+          </div>
+          <p class="pet-breed"></p>
+          <ul class="list-unstyled mb-3">
+            <li><strong>Age:</strong> <span class="pet-age"></span></li>
+            <li><strong>Sex:</strong> <span class="pet-sex"></span></li>
+            <li><strong>Shelter:</strong> <span class="pet-shelter"></span></li>
+          </ul>
+          <p class="mb-0 pet-description"></p>
+        </div>
+
+        <!-- The footer sits at the bottom of the card (Bootstrap's card-body
+             grows to fill the space), so all buttons in a row line up -->
+        <div class="card-footer bg-transparent border-0 pb-3">
+          <a class="accent-button pet-details-link" href="#pet-details">View details</a>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- One page button (Previous, 1, 2, ..., Next).
+       A <button>, not a link: in this SPA every "#..." is a page for the router. -->
+  <template id="petPageItemTemplate">
+    <li class="page-item">
+      <button type="button" class="page-link"></button>
+    </li>
+  </template>
+</section>

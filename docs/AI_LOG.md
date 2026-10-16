@@ -61,6 +61,11 @@
   It built items 1–5 with sample data in frontend/js/my-applications.js (same field names as the database) and a card <template> in the view, filled in with .text() so the data is never run as HTML. The router now fires a viewLoaded event after each view, so page scripts know when to draw. Item 6 waits for the backend, because withdrawal and status history need schema changes.
   I kept it as generated.
 
+- Claude Code (same setup, frontend agent): built the Pets page.
+  Prompt: "@agent-frontend Implement a complete, polished Pets page that allows visitors to browse available pets and view their details. Create an attractive, responsive Pets page with the following sections. A. Page header (…) B. Search and filters (…) Search and filters should work together. Include a way to clear/reset all filters. Show a helpful message when no pets match the selected filters. Do not show adopted pets as available for adoption. C. Pet listings (…)"
+  It created frontend/views/pets.html and frontend/js/pets.js with 12 sample pets (the same fields as the pets table, with Max, Luna and Rocky as ids 1–3), a search by name and four filters that work together, a Clear filters button and an empty state. Adopted pets are hidden at first and get a grey "Adopted" badge.
+  I removed the header it built, because Home and About already have a hero, and asked for pagination: "Let's get rid of the Header section on the Pets page completely, we already have the home page with the hero image and the about page with the hero image. Let's also add pagination - we will display 6 items per page." Claude Code did both, and the section title became the page's h1. I kept the rest as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.

@@ -68,11 +68,14 @@ h1, h2, h3, h4, h5, h6,
 
 
 /* ---------- 4. Section titles (heading with a short line under it) ---------- */
+/* h1 too: on Pets the section title is the page's main heading */
+.section-title h1,
 .section-title h2 {
   font-size: 32px;
 }
 
 /* The 50px x 3px accent line under the heading */
+.section-title h1::after,
 .section-title h2::after {
   content: "";
   display: block;
@@ -438,4 +441,45 @@ h1, h2, h3, h4, h5, h6,
 .role-badge {
   background-color: var(--color-bg-alt);
   color: var(--color-heading);
+}
+
+
+/* ---------- 18. Pets ---------- */
+/* A page button scrolls back up to the count above the cards. The navbar
+   is sticky (about 56px high), so without this it would cover the count. */
+.pet-results {
+  scroll-margin-top: 70px;
+}
+
+/* The search and filter box: a .form-card with less padding, because it's
+   a toolbar, not a whole form page. Comes later in the file, so it wins. */
+.pet-filters {
+  padding: 24px 20px;
+}
+
+/* Shown instead of a photo when a pet has none (photo_url is null).
+   It also has .pet-card-img (block 7), so it has the same 220px height
+   and cream background as a photo, and every card lines up. */
+.pet-photo-placeholder {
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.pet-photo-placeholder i {
+  font-size: 40px;
+  color: var(--color-accent);
+}
+
+/* Pagination in our colours instead of Bootstrap's blue. Bootstrap's
+   pagination takes its colours from these variables, so changing them is
+   enough. They must be on the same element as .pagination, which sets
+   Bootstrap's values; ours come later in the file, so they win. */
+.pet-pagination {
+  --bs-pagination-color: var(--color-accent);
+  --bs-pagination-hover-color: var(--color-accent-dark);
+  --bs-pagination-hover-bg: var(--color-bg-alt);
+  --bs-pagination-focus-color: var(--color-accent-dark);
+  --bs-pagination-focus-bg: var(--color-bg-alt);
+  --bs-pagination-active-bg: var(--color-accent);
+  --bs-pagination-active-border-color: var(--color-accent);
 }
