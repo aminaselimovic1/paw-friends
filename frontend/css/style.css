@@ -483,3 +483,41 @@ h1, h2, h3, h4, h5, h6,
   --bs-pagination-active-bg: var(--color-accent);
   --bs-pagination-active-border-color: var(--color-accent);
 }
+
+
+/* ---------- 19. Pet details ---------- */
+/* The big photo, and the "Photo coming soon" box in its place (which also
+   has .pet-photo-placeholder from block 18). It fills the column, has the
+   same height for every pet and is cropped instead of stretched. */
+.pet-detail-photo {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 5px;
+  background-color: var(--color-bg-alt);
+}
+
+/* Phones: a lower photo, so the name is visible without much scrolling */
+@media (max-width: 576px) {
+  .pet-detail-photo {
+    height: 280px;
+  }
+}
+
+/* The white boxes on this page: a .form-card with less padding */
+.detail-card {
+  padding: 24px;
+}
+
+/* Terracotta icons in the "Vaccinations" and "Vet visits" headings */
+.detail-card h3 .bi {
+  color: var(--color-accent);
+}
+
+/* A line between two health records. "+" selects an item only when another
+   item comes right before it, so the first one has no line above it. */
+.health-item + .health-item {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bs-border-color);
+}

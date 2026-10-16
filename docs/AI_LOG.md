@@ -66,6 +66,11 @@
   It created frontend/views/pets.html and frontend/js/pets.js with 12 sample pets (the same fields as the pets table, with Max, Luna and Rocky as ids 1–3), a search by name and four filters that work together, a Clear filters button and an empty state. Adopted pets are hidden at first and get a grey "Adopted" badge.
   I removed the header it built, because Home and About already have a hero, and asked for pagination: "Let's get rid of the Header section on the Pets page completely, we already have the home page with the hero image and the about page with the hero image. Let's also add pagination - we will display 6 items per page." Claude Code did both, and the section title became the page's h1. I kept the rest as generated.
 
+- Claude Code (same setup): built the pet details page.
+  Prompt: "Let's build pet-details next. Include, where available: Larger pet image. Name, species, breed, age, and gender. (…) Do not display fields that have no data, and do not fabricate medical records or claim that a pet is vaccinated unless the sample data explicitly says so. E. Adoption action and roles (…) Vets should be able to add relevant data, and admins should be able to edit the pets' details. Do not add new authentication logic or change the existing role system. (…)"
+  Before building, it asked me three questions. I chose sample vet records and vaccinations, the vet and admin forms in modals, a spot for the breed info, and fixing Home's "View details" links. It created frontend/views/pet-details.html and frontend/js/pet-details.js. The page finds the pet from the link (#pet-details?id=2) and hides fields and sections that have no data. Guests get a login link and users an "Apply to adopt" button, which only explains that nothing is sent yet. Vets can add vet records and vaccinations, and admins can edit the pet, in Bootstrap modals that save to the sample data until a reload.
+  I kept it as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -101,3 +106,13 @@
   What was wrong: in Claude Code's first version, the empty-state box had no top margin. When no card matches the filter, the empty card row (Bootstrap's `row g-4`) keeps its negative top margin of −24px, which pulled the box up against the header.
   How it was noticed: Claude Code saw it in a screenshot of the "Rejected" filter, before handing the page over.
   How it was fixed: Claude Code added `mt-4` to the empty state and measured a 24px gap afterwards, the same as above the cards.
+
+- The Edit pet details form let the birth date be left empty (pet details).
+  What was wrong: Claude Code made the birth date optional in the admin's edit form. The Pets page calculates each pet's age and age group from the birth date, so after clearing it, the Pets list showed "NaN years".
+  How it was noticed: Claude Code's own test in headless Chrome, before handing the page over.
+  How it was fixed: Claude Code made the birth date required in the form and removed the code that hid Age and Born on the details page.
+
+- The heading icons on pet details used a CSS class that doesn't exist.
+  What was wrong: Claude Code gave the "Vaccinations" and "Vet visits" heading icons the class `text-accent`, which exists neither in Bootstrap nor in style.css, so the icons would not have been terracotta.
+  How it was noticed: Claude Code noticed it right after writing the view, and a search confirmed that the class isn't defined anywhere.
+  How it was fixed: Claude Code removed the class and coloured the icons with a rule in style.css (`.detail-card h3 .bi`).
