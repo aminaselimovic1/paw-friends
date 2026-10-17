@@ -82,6 +82,10 @@ function loadView(route) {
     // The view's HTML is now in the page: show only its parts for this role
     showLinksFor(getRole()); // from roles.js
 
+    // The footer starts hidden (index.html), so it doesn't flash in the middle
+    // of the screen while <main> is still empty. Now there's a view above it.
+    $("#siteFooter").removeClass("d-none");
+
     // The page is in the list, but its view file doesn't exist yet
     if (status === "error") {
       $("#app").load("views/not-found.html");
