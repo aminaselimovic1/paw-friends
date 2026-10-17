@@ -100,6 +100,11 @@
   Pages now show "Unknown pet" instead of crashing, and router.js has a list of which roles may open each page. Guests are sent to the login page and logged-in users to Home. Claude Code found the same "button only hidden" problem in 4 more places and a missing "Photo coming soon" box on My applications, and I asked it to fix them too: "Fix the problems that you've found a well". After my next report ("New issue: the vet dashboard has the same crash. (…)"), it fixed the vet dashboard. It also asked before doing my two suggestions, and I accepted both: "Unknown pet" is now plain text, and logging in goes back to the page you asked for (#login?next=…).
   I kept it as generated.
 
+- Claude Code (same setup): fixed the medium-priority bugs from my manual testing.
+  Prompt: "next, let's work on the following medium priority issues I found: 1. Fields that contain only spaces pass validation everywhere. (…) 2. A pet’s status doesn’t match its applications. (…) 3. The Profile page always shows Lejla Kovač, whether you’re Guest, Vet or Admin, while the dashboards greet Emina or Selma. (…) 4. Phone validation is too loose. (…)"
+  All forms now check the trimmed value, so a field of only spaces counts as empty (passwords aren't trimmed, but can't be only spaces), and a phone number needs 6–15 digits. Rejecting a pet's last pending application makes it available again, and Profile shows the account of the current role from the same list as Manage users. Claude Code asked what "Pending" should mean, and I chose that others can still apply to a pending pet. After my re-test ("Still open: the status dropdown in Manage pets → Edit accepts any value, so an admin can break the match by hand. (…)"), it first removed the status dropdown, which I rejected: "No, I want the admin to be able to change the status." Now the dropdown stays and shows a warning when the status doesn't match the pet's applications.
+  I kept the rest as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -180,3 +185,23 @@
   What was wrong: to make "Unknown pet" plain text, Claude Code first wrote `.text-link:not([href])`. The Edit, Delete, Review and Add record buttons also use .text-link and never have an href, so they lost their terracotta colour and underline.
   How it was noticed: Claude Code saw it in a screenshot of Manage applications, before handing the change over.
   How it was fixed: Claude Code limited the rule to links (`a.text-link:not([href])`) and checked the buttons' styles afterwards.
+
+- Fields made only of spaces passed validation (all forms).
+  What was wrong: Claude Code's forms relied on required and minlength, which check the value before it is trimmed. Names, subjects, messages, breeds, addresses and vaccine names of only spaces were accepted, and register accepted a password of eight spaces. Add pet then saved a pet with an empty name ("was added.").
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it. Claude Code added a check of the trimmed value to every form with text fields (with setCustomValidity), Profile now trims the values it saves, and a new password can't be only spaces.
+
+- A pet's status didn't match its applications (manage applications and the sample data).
+  What was wrong: rejecting a pet's only pending application left it "Pending", and in Claude Code's sample data Luna and Rocky were "Available" although they had pending applications.
+  How I noticed: during my manual testing (Mia stayed "Pending" after I rejected her only application).
+  How it was fixed: I reported it. Claude Code made the pet available again when its last pending application is rejected, and changed Luna and Rocky to "Pending".
+
+- The phone pattern accepted "+", "++++" and "+++ " (register, Profile and the shelter form).
+  What was wrong: the pattern [0-9+ ]+ allows digits, + and spaces in any order. It followed my register spec ("digits, spaces and +") word for word, but Claude Code didn't point out that this doesn't describe a phone number.
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it, and Claude Code changed the pattern to 6–15 digits with + only at the start.
+
+- Profile always showed Lejla Kovač (Profile page).
+  What was wrong: Claude Code gave Profile its own copy of one account, so every role saw Lejla, and renaming her in Manage users didn't change her profile.
+  How I noticed: during my manual testing.
+  How it was fixed: I reported it, and Claude Code made Profile read the current role's account from the shared list of users.

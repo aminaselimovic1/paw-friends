@@ -9,6 +9,15 @@ function getRole() {
   return localStorage.getItem("demoRole") || "guest";
 }
 
+// The account that is "logged in" for the current role, from sampleUsers
+// (manage-users.js): Lejla, Emina or Selma; undefined for a guest. Profile
+// and the dashboards all read the same account, so a change shows everywhere.
+// From M4 the logged-in user comes from the JWT token instead.
+function getDemoAccount() {
+  const accountIds = { user: demoUserId, vet: demoVet.id, admin: demoAdminId };
+  return findUserById(accountIds[getRole()]);
+}
+
 function setRole(role) {
   localStorage.setItem("demoRole", role);
   showLinksFor(role);

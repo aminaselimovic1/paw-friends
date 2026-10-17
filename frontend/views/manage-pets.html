@@ -144,6 +144,12 @@
                 <option value="adopted">Adopted</option>
               </select>
             </div>
+            <!-- Shown by JS when the chosen status doesn't fit the pet's
+                 applications (manage-applications.js). Saving is still allowed.
+                 aria-live: screen readers read it when it appears. -->
+            <div class="col-12">
+              <div id="petFormStatusWarning" class="alert alert-warning small mb-0 d-none" aria-live="polite"></div>
+            </div>
             <div class="col-12">
               <label for="petFormDescription" class="form-label">
                 Description <span class="text-body-secondary">(optional)</span>

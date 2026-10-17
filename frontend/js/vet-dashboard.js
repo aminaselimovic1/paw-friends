@@ -272,8 +272,9 @@ function renderVetDashboard() {
   const followUps = getFollowUps();
   const followUpPetCount = getFollowUpPetIds().length;
 
-  // Header: "Welcome back, Dr. Emina Mehić" and today's overview
-  $("#vetName").text(demoVet.name);
+  // Header: "Welcome back, Dr. Emina Mehić" and today's overview. The name
+  // comes from the vet's account (roles.js), so a change on Profile shows here.
+  $("#vetName").text("Dr. " + getDemoAccount().name);
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long", day: "numeric", month: "long", year: "numeric"
   });

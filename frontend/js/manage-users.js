@@ -8,23 +8,26 @@
 // (pet-details.js), capitalizeFirstLetter (pets.js) and resetForm (auth.js).
 
 // Same columns as the planned users table, without password_hash: a password
-// (even a hashed one) is never sent to the browser.
+// (even a hashed one) is never sent to the browser. phone and city are shown
+// on Profile; they aren't in the planned table yet (a schema decision for M2).
 // The emails match the demo login: admin@example.com = admin, emina.vet@... = vet.
-// Lejla (id 7) is also sampleUser in profile.js; the vets' ids match vet_id
-// on the health records.
+// The vets' ids match vet_id on the health records.
 const sampleUsers = [
-  { id: 1, name: "Selma Hodžić", email: "admin@example.com", role: "admin" },
-  { id: 2, name: "Emina Mehić", email: "emina.vet@example.com", role: "vet" },
-  { id: 3, name: "Amar Hadžić", email: "amar@example.com", role: "user" },
-  { id: 4, name: "Adnan Begić", email: "adnan.vet@example.com", role: "vet" },
-  { id: 5, name: "Sara Kovačević", email: "sara@example.com", role: "user" },
-  { id: 6, name: "Tarik Delić", email: "tarik@example.com", role: "user" },
-  { id: 7, name: "Lejla Kovač", email: "lejla@example.com", role: "user" },
-  { id: 8, name: "Ivana Marić", email: "ivana@example.com", role: "user" }
+  { id: 1, name: "Selma Hodžić", email: "admin@example.com", role: "admin", phone: "+387 33 111 222", city: "Sarajevo" },
+  { id: 2, name: "Emina Mehić", email: "emina.vet@example.com", role: "vet", phone: "+387 61 222 333", city: "Sarajevo" },
+  { id: 3, name: "Amar Hadžić", email: "amar@example.com", role: "user", phone: null, city: null },
+  { id: 4, name: "Adnan Begić", email: "adnan.vet@example.com", role: "vet", phone: null, city: null },
+  { id: 5, name: "Sara Kovačević", email: "sara@example.com", role: "user", phone: null, city: null },
+  { id: 6, name: "Tarik Delić", email: "tarik@example.com", role: "user", phone: null, city: null },
+  { id: 7, name: "Lejla Kovač", email: "lejla@example.com", role: "user", phone: "+387 61 123 456", city: "Sarajevo" },
+  { id: 8, name: "Ivana Marić", email: "ivana@example.com", role: "user", phone: null, city: null }
 ];
 
-// The admin who is "logged in" in the demo (Selma). In M4 it comes from the JWT token.
+// The accounts that are "logged in" in the demo: the admin (Selma) and the
+// user (Lejla); the vet is demoVet (pet-details.js). In M4 the logged-in
+// user comes from the JWT token. See getDemoAccount() in roles.js.
 const demoAdminId = 1;
+const demoUserId = 7;
 
 function findUserById(userId) {
   return sampleUsers.find(function (user) {
@@ -135,15 +138,20 @@ $(document).on("click", ".edit-user", function () {
   openUserForm(findUserById(Number($(this).attr("data-id"))));
 });
 
-// users.email is unique: no other account may use the same email.
+// users.email is unique: true when an account other than ownId already uses
+// this email (compared lowercased). Also used by the Profile page.
+function isEmailUsedByOther(email, ownId) {
+  const wanted = email.trim().toLowerCase();
+  return sampleUsers.some(function (user) {
+    return user.id !== ownId && user.email.toLowerCase() === wanted;
+  });
+}
+
 // setCustomValidity() marks the field invalid, like the password match on register.
 function checkUserEmailIsFree() {
   const field = document.getElementById("userEmail");
-  const email = field.value.trim().toLowerCase();
   const editedId = Number($("#userId").val()); // 0 for a new user, so it matches nobody
-  const usedByOther = sampleUsers.some(function (user) {
-    return user.id !== editedId && user.email.toLowerCase() === email;
-  });
+  const usedByOther = isEmailUsedByOther(field.value, editedId);
   field.setCustomValidity(usedByOther ? "This email is already used by another account." : "");
   // The error text under the field: "already used", or the normal one
   $("#userEmailFeedback").text(usedByOther
@@ -155,6 +163,7 @@ $(document).on("input", "#userEmail", checkUserEmailIsFree);
 
 $(document).on("submit", "#userForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this); // from auth.js
   checkUserEmailIsFree();
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {

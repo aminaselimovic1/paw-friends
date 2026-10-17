@@ -8,7 +8,8 @@
 // sampleShelters (shelters.js), sampleAdoptionApplications and formatDate
 // (my-applications.js), sampleVetRecords, sampleVaccinations and
 // getTodayIsoDate (pet-details.js), findPetById (vet-dashboard.js),
-// getNextId (admin-dashboard.js) and resetForm (auth.js).
+// getNextId (admin-dashboard.js), updateStatusWarning (manage-applications.js),
+// and resetForm and checkTrimmedFields (auth.js).
 
 function findShelterById(shelterId) {
   return sampleShelters.find(function (shelter) {
@@ -121,9 +122,18 @@ function openPetForm(pet) {
   $("#petFormBirthDate").val(isNew ? "" : pet.birth_date);
   $("#petFormShelter").val(isNew ? "" : pet.shelter_id);
   $("#petFormStatus").val(isNew ? "available" : pet.status);
+  updatePetFormStatusWarning();
   $("#petFormDescription").val(isNew ? "" : pet.description || "");
   bootstrap.Modal.getOrCreateInstance(document.getElementById("petFormModal")).show();
 }
+
+// A warning when the chosen status doesn't fit the pet's applications
+// (manage-applications.js). A new pet's id is "" -> 0, which has no applications.
+function updatePetFormStatusWarning() {
+  updateStatusWarning("#petFormStatus", "#petFormStatusWarning", Number($("#managePetId").val()));
+}
+
+$(document).on("change", "#petFormStatus", updatePetFormStatusWarning);
 
 $(document).on("click", "#addPetButton", function () {
   openPetForm();
@@ -135,6 +145,7 @@ $(document).on("click", ".edit-pet", function () {
 
 $(document).on("submit", "#petForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this); // from auth.js
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {
     return;

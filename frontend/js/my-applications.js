@@ -2,11 +2,11 @@
 // Milestone 1: sample data instead of the backend. From M4 the same list
 // comes from the REST API (through a service file), and this array goes.
 //
-// Reuses: sampleUser (profile.js) and samplePets (pets.js).
+// Reuses: demoUserId (manage-users.js) and samplePets (pets.js).
 
 // Every adoption application, from every user: the same columns as the
 // planned adoption_applications table. This page shows only the logged-in
-// user's (sampleUser, id 7: Lejla); the admin pages show and review all of
+// user's (demoUserId, id 7: Lejla); the admin pages show and review all of
 // them (manage-applications.js), so a decision there shows up here too.
 // reviewed_by = the id of the admin who decided (null while pending).
 const sampleAdoptionApplications = [
@@ -56,7 +56,7 @@ const sampleAdoptionApplications = [
 // and shelter added from samplePets (in M4 the API returns them like this)
 function getMyApplications() {
   return sampleAdoptionApplications
-    .filter(function (application) { return application.user_id === sampleUser.id; })
+    .filter(function (application) { return application.user_id === demoUserId; })
     .sort(function (a, b) { return b.created_at.localeCompare(a.created_at); })
     .map(function (application) {
       const foundPet = samplePets.find(function (p) { return p.id === application.pet_id; });

@@ -61,7 +61,7 @@
           <div class="form-card detail-card mb-4">
             <p id="adoptionText" class="mb-0"></p>
 
-            <!-- Only for available pets (JS). Inside, data-roles decides:
+            <!-- Only for pets that aren't adopted (JS). Inside, data-roles decides:
                  users get the button, guests a link to log in. Vets and
                  admins see neither. -->
             <div id="adoptionCta" class="d-none">
@@ -304,6 +304,9 @@
                 <option value="pending">Pending</option>
                 <option value="adopted">Adopted</option>
               </select>
+              <!-- Shown by JS when the chosen status doesn't fit the pet's
+                   applications (manage-applications.js). Saving is still allowed. -->
+              <div id="editPetStatusWarning" class="alert alert-warning small mt-2 mb-0 d-none" aria-live="polite"></div>
             </div>
             <div class="col-12">
               <label for="editPetDescription" class="form-label">

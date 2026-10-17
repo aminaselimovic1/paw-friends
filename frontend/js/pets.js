@@ -13,6 +13,8 @@
 // shelter_id is the id of a shelter in sampleShelters (shelters.js).
 // There's no age column: the age is worked out from birth_date (see below),
 // so it's never out of date. Pets without a photo have photo_url: null.
+// status matches the applications (my-applications.js): "pending" while at
+// least one application is waiting for review, "adopted" once one is approved.
 const samplePets = [
   {
     id: 1, shelter_id: 1, shelter_name: "Happy Paws Shelter",
@@ -23,13 +25,13 @@ const samplePets = [
   {
     id: 2, shelter_id: 2, shelter_name: "Second Chance Rescue",
     name: "Luna", species: "cat", breed_name: "British Shorthair", sex: "female",
-    birth_date: "2024-03-08", photo_url: "assets/images/pet-luna.jpg", status: "available",
+    birth_date: "2024-03-08", photo_url: "assets/images/pet-luna.jpg", status: "pending",
     description: "A calm, affectionate cat who enjoys quiet afternoons on the windowsill. She loves gentle brushing."
   },
   {
     id: 3, shelter_id: 1, shelter_name: "Happy Paws Shelter",
     name: "Rocky", species: "dog", breed_name: "Beagle", sex: "male",
-    birth_date: "2025-05-20", photo_url: "assets/images/pet-rocky.jpg", status: "available",
+    birth_date: "2025-05-20", photo_url: "assets/images/pet-rocky.jpg", status: "pending",
     description: "A curious, playful young dog who follows his nose everywhere. He would love an active family."
   },
   {

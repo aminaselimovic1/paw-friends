@@ -1,16 +1,11 @@
 // Profile page (user, vet and admin; the role badge shows which one).
-// Milestone 1: sample data instead of the backend. Changes are kept in this
-// object until the page is reloaded. From M4 the data comes from the API.
-
-// Same field names as the database (snake_case). The planned users table
-// has no phone and city columns yet: that's a schema decision for M2.
-const sampleUser = {
-  id: 7,
-  name: "Lejla Kovač",
-  email: "lejla@example.com",
-  phone: "+387 61 123 456",
-  city: "Sarajevo"
-};
+// Milestone 1: sample data instead of the backend. It shows the account of
+// the current demo role from sampleUsers (getDemoAccount() in roles.js), so
+// a change here also shows on Manage users and the dashboards, until the
+// page is reloaded. From M4 the data comes from the API.
+//
+// Reuses: getDemoAccount (roles.js), isEmailUsedByOther (manage-users.js),
+// resetForm and checkTrimmedFields (auth.js).
 
 // "Lejla Kovač" -> "LK" (the first letters of the first two words)
 function getInitials(name) {
@@ -26,15 +21,16 @@ function getInitials(name) {
 // .text() puts the values in as plain text, never as HTML.
 function renderProfile() {
   const role = getRole(); // from roles.js: "user", "vet", ...
-  $("#profileInitials").text(getInitials(sampleUser.name));
-  $("#profileName").text(sampleUser.name);
+  const account = getDemoAccount();
+  $("#profileInitials").text(getInitials(account.name));
+  $("#profileName").text(account.name);
   $("#profileRole").text(role.charAt(0).toUpperCase() + role.slice(1));
 
-  $("#infoName").text(sampleUser.name);
-  $("#infoEmail").text(sampleUser.email);
-  $("#infoPhone").text(sampleUser.phone || "Not provided");
-  $("#infoCity").text(sampleUser.city || "Not provided");
-  $("#securityEmail").text(sampleUser.email);
+  $("#infoName").text(account.name);
+  $("#infoEmail").text(account.email);
+  $("#infoPhone").text(account.phone || "Not provided");
+  $("#infoCity").text(account.city || "Not provided");
+  $("#securityEmail").text(account.email);
 }
 
 // Switches the personal information card between showing and editing
@@ -50,10 +46,15 @@ $(document).on("viewLoaded", function (e, route) {
   }
 });
 
-// A different role picked in the demo bar while on this page: update the
-// role badge. (roles.js handles the same event first, so getRole() is new.)
+// A different role picked in the demo bar while on this page: show that
+// role's account. (roles.js handles the same event first, so getRole() is
+// new. Switching to Guest has already left this page then.)
 $(document).on("change", "#roleSelect", function () {
   if (getRouteFromHash() === "profile") { // from router.js
+    // An open edit form and the "saved" message belonged to the old account
+    resetForm(document.getElementById("profileForm"));
+    showProfileForm(false);
+    $("#profileSaved").addClass("d-none");
     renderProfile();
   }
 });
@@ -63,13 +64,27 @@ $(document).on("change", "#roleSelect", function () {
 
 // "Edit": copy the current values into the form and show it
 $(document).on("click", "#editProfileButton", function () {
+  const account = getDemoAccount();
   $("#profileSaved").addClass("d-none");
-  $("#editName").val(sampleUser.name);
-  $("#editEmail").val(sampleUser.email);
-  $("#editPhone").val(sampleUser.phone);
-  $("#editCity").val(sampleUser.city);
+  $("#editName").val(account.name);
+  $("#editEmail").val(account.email);
+  $("#editPhone").val(account.phone);
+  $("#editCity").val(account.city);
   showProfileForm(true);
 });
+
+// users.email is unique, so the email can't be another account's
+// (the same rule as on Manage users)
+function checkProfileEmailIsFree() {
+  const field = document.getElementById("editEmail");
+  const usedByOther = isEmailUsedByOther(field.value, getDemoAccount().id);
+  field.setCustomValidity(usedByOther ? "This email is already used by another account." : "");
+  $("#editEmailFeedback").text(usedByOther
+    ? "This email is already used by another account."
+    : "Enter a valid email address, e.g. name@example.com.");
+}
+
+$(document).on("input", "#editEmail", checkProfileEmailIsFree);
 
 // "Cancel": throw the changes away and show the saved values again
 $(document).on("click", "#cancelProfileButton", function () {
@@ -80,17 +95,21 @@ $(document).on("click", "#cancelProfileButton", function () {
 // "Save changes"
 $(document).on("submit", "#profileForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this); // from auth.js: a name of only spaces counts as empty
+  checkProfileEmailIsFree();
 
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {
     return; // invalid: stop here, the errors are shown
   }
 
-  // Demo (M1): saved only in sampleUser. In M4 this becomes a request to the API.
-  sampleUser.name = $("#editName").val();
-  sampleUser.email = $("#editEmail").val();
-  sampleUser.phone = $("#editPhone").val();
-  sampleUser.city = $("#editCity").val();
+  // Demo (M1): saved in the account in sampleUsers. In M4 this becomes a
+  // request to the API. Values are trimmed; empty optional fields become null.
+  const account = getDemoAccount();
+  account.name = $("#editName").val().trim();
+  account.email = $("#editEmail").val().trim();
+  account.phone = $("#editPhone").val().trim() || null;
+  account.city = $("#editCity").val().trim() || null;
 
   resetForm(this);
   showProfileForm(false);

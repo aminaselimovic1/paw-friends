@@ -34,21 +34,25 @@
               <label for="registerPhone" class="form-label">
                 Phone <span class="text-body-secondary">(optional)</span>
               </label>
-              <!-- pattern: only digits, spaces and + are allowed -->
+              <!-- pattern: an optional + at the start, then 6 to 15 digits; one space
+                   may come before each digit (+387 61 123 456). Spaces at the start
+                   and end are allowed: the value is trimmed. -->
               <input type="tel" class="form-control" id="registerPhone" name="phone"
-                     pattern="[0-9+ ]+" autocomplete="tel">
-              <div class="invalid-feedback">Use only digits, spaces and +.</div>
+                     pattern=" *\+?( ?[0-9]){6,15} *" autocomplete="tel">
+              <div class="invalid-feedback">Enter 6 to 15 digits, with + only at the start, e.g. +387 61 123 456.</div>
             </div>
 
             <div class="mb-3">
               <label for="registerPassword" class="form-label">Password</label>
               <div class="input-group has-validation">
+                <!-- pattern: at least one character that isn't a space. A password
+                     isn't trimmed (spaces may be part of it), but only spaces is refused. -->
                 <input type="password" class="form-control" id="registerPassword" name="password"
-                       minlength="8" autocomplete="new-password" required>
+                       minlength="8" pattern=".*\S.*" autocomplete="new-password" required>
                 <button type="button" class="password-toggle" aria-label="Show password">
                   <i class="bi bi-eye" aria-hidden="true"></i>
                 </button>
-                <div class="invalid-feedback">Use at least 8 characters.</div>
+                <div class="invalid-feedback">Use at least 8 characters, not only spaces.</div>
               </div>
             </div>
 

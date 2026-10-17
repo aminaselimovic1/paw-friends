@@ -64,6 +64,43 @@ function checkPasswordsMatch() {
 
 $(document).on("input", "#registerPassword, #registerConfirmPassword", checkPasswordsMatch);
 
+// ---------- Spaces at the start and end don't count (every form) ----------
+
+// The browser's required and minlength look at the value as typed, so a name
+// of only spaces passes them. This checks the trimmed value instead: "   "
+// counts as empty, and " a " as 1 character. A field that fails gets a
+// custom error (setCustomValidity, like the password match), so Bootstrap
+// shows its normal message. The save code trims the values too (.trim()).
+// (We can't just trim the field and check again: minlength only checks
+// values typed by the user, not values set by JavaScript.)
+// Passwords aren't included: a space can be part of a password, so it's
+// never trimmed. pattern=".*\S.*" on the new-password fields refuses only spaces.
+function checkTrimmedField(field) {
+  const length = field.value.trim().length;
+  let tooShort = false;
+  if (length === 0) {
+    tooShort = field.required; // only spaces = empty
+  } else if (field.minLength > 0) { // minLength is -1 when there's no minlength
+    tooShort = length < field.minLength;
+  }
+  field.setCustomValidity(tooShort ? "Too short" : "");
+}
+
+const trimmedFieldSelector = 'input[type="text"], input[type="tel"], textarea';
+
+// Checks every text field of a form. Call it before form.checkValidity().
+function checkTrimmedFields(form) {
+  $(form).find(trimmedFieldSelector).each(function () {
+    checkTrimmedField(this);
+  });
+}
+
+// While typing, so the red/green style follows the trimmed value
+$(document).on("input", trimmedFieldSelector, function () {
+  checkTrimmedField(this);
+});
+
+
 // Empties a form and removes its validation styles
 function resetForm(form) {
   form.reset();
@@ -77,6 +114,7 @@ function resetForm(form) {
 
 $(document).on("submit", "#registerForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this);
   checkPasswordsMatch();
 
   $(this).addClass("was-validated");

@@ -50,9 +50,55 @@ function approveApplication(application) {
   });
 }
 
+// Reject: when this was the pet's last pending application, nobody is waiting
+// for the pet any more, so it's "available" again (not stuck on "pending").
+// Returns true when the pet became available.
 function rejectApplication(application) {
   application.status = "rejected";
   application.reviewed_by = demoAdminId;
+  const pet = findPetById(application.pet_id);
+  if (pet !== undefined && pet.status === "pending" && getOtherPendingApplications(application).length === 0) {
+    pet.status = "available";
+    return true;
+  }
+  return false;
+}
+
+// ---------- The pet status that fits the applications ----------
+// Approve and reject above keep a pet's status in step with its applications.
+// The admin can still choose any status in the pet forms (manage-pets.js,
+// pet-details.js), but gets a warning when it doesn't fit.
+
+// How many of the pet's applications have this status ("pending", "approved")
+function countPetApplications(petId, status) {
+  return sampleAdoptionApplications.filter(function (application) {
+    return application.pet_id === petId && application.status === status;
+  }).length;
+}
+
+// Why the chosen status doesn't fit the pet's applications, or "" when it
+// does. "adopted" fits an approved application, "pending" a pending one,
+// "available" neither. A new pet (no id) has no applications.
+function getStatusWarning(petId, chosenStatus) {
+  const approvedCount = countPetApplications(petId, "approved");
+  const pendingCount = countPetApplications(petId, "pending");
+  let reason = "";
+  if (chosenStatus !== "adopted" && approvedCount > 0) {
+    reason = "An application for this pet was approved.";
+  } else if (chosenStatus === "adopted" && approvedCount === 0) {
+    reason = "No application for this pet has been approved.";
+  } else if (chosenStatus === "available" && pendingCount > 0) {
+    reason = "This pet has " + pendingCount + " pending application(s).";
+  } else if (chosenStatus === "pending" && pendingCount === 0) {
+    reason = "This pet has no pending applications.";
+  }
+  return reason === "" ? "" : reason + " You can still save, but the status won't match the applications.";
+}
+
+// Shows or hides the warning under a pet form's status field
+function updateStatusWarning(statusField, warning, petId) {
+  const text = getStatusWarning(petId, $(statusField).val());
+  $(warning).text(text).toggleClass("d-none", text === "");
 }
 
 // The applications that match the search (applicant or pet name) AND the
@@ -208,7 +254,11 @@ $(document).on("click", "#rejectApplication", function () {
   if (application.status !== "pending") {
     return;
   }
-  rejectApplication(application);
-  finishReview(getApplicantName(application) + "'s application for "
-    + getPetName(application) + " was rejected.");
+  const petIsAvailable = rejectApplication(application);
+  let message = getApplicantName(application) + "'s application for "
+    + getPetName(application) + " was rejected.";
+  if (petIsAvailable) {
+    message += " " + getPetName(application) + " is available again.";
+  }
+  finishReview(message);
 });

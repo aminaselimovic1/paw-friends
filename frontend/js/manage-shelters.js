@@ -121,6 +121,7 @@ $(document).on("input", "#shelterFormLatitude, #shelterFormLongitude", checkShel
 
 $(document).on("submit", "#shelterForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this); // from auth.js
   checkShelterCoordinates();
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {

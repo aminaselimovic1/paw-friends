@@ -87,9 +87,9 @@
             </div>
             <div class="col-sm-6">
               <label for="shelterFormPhone" class="form-label">Phone</label>
-              <!-- pattern: only digits, spaces and + (like on register) -->
-              <input type="tel" class="form-control" id="shelterFormPhone" pattern="[0-9+ ]+" required>
-              <div class="invalid-feedback">Use only digits, spaces and +.</div>
+              <!-- pattern: the same as on register (6 to 15 digits, + only at the start) -->
+              <input type="tel" class="form-control" id="shelterFormPhone" pattern=" *\+?( ?[0-9]){6,15} *" required>
+              <div class="invalid-feedback">Enter 6 to 15 digits, with + only at the start, e.g. +387 33 123 456.</div>
             </div>
             <div class="col-sm-6">
               <label for="shelterFormEmail" class="form-label">Email</label>

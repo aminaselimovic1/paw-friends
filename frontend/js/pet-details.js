@@ -181,16 +181,18 @@ function renderHealthHistory(pet) {
   $("#healthSection").toggleClass("d-none", vaccinations.length + vetRecords.length === 0);
 }
 
-// The adoption box: one sentence for the status, and the call to action only
-// for available pets (inside it, data-roles decides between user and guest)
+// The adoption box: one sentence for the status, and the call to action for
+// every pet that isn't adopted yet (inside it, data-roles decides between user
+// and guest). A pending pet can get more applications: when the admin approves
+// one, the others are rejected (manage-applications.js).
 function renderAdoption(pet) {
   const adoptionTexts = {
     available: pet.name + " is looking for a loving home.",
-    pending: "An adoption application for " + pet.name + " is being reviewed.",
+    pending: "An adoption application for " + pet.name + " is being reviewed. You can still apply.",
     adopted: pet.name + " has already found a home."
   };
   $("#adoptionText").text(adoptionTexts[pet.status]);
-  $("#adoptionCta").toggleClass("d-none", pet.status !== "available");
+  $("#adoptionCta").toggleClass("d-none", pet.status === "adopted");
 }
 
 // Fills the whole page for the pet in the link, or shows "Pet not found"
@@ -299,6 +301,7 @@ $(document).on("hidden.bs.modal", ".pet-modal", function () {
 // Vet: "Add vet record"
 $(document).on("submit", "#vetRecordForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this); // from auth.js: a field of only spaces counts as empty
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {
     return; // invalid: stop here, the errors are shown
@@ -337,6 +340,7 @@ $(document).on("input", "#vaccineDateGiven, #vaccineNextDue", checkNextDueDate);
 // Vet: "Add vaccination"
 $(document).on("submit", "#vaccinationForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this);
   checkNextDueDate();
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {
@@ -357,6 +361,14 @@ $(document).on("submit", "#vaccinationForm", function (e) {
   finishHealthForm(this, "Vaccination added for " + pet.name + ".");
 });
 
+// A warning when the chosen status doesn't fit the pet's applications
+// (updateStatusWarning in manage-applications.js). Saving is still allowed.
+function updateEditPetStatusWarning() {
+  updateStatusWarning("#editPetStatus", "#editPetStatusWarning", getDetailPet().id);
+}
+
+$(document).on("change", "#editPetStatus", updateEditPetStatusWarning);
+
 // Admin: "Edit pet details" opens, so copy the pet's current values into the form
 $(document).on("show.bs.modal", "#editPetModal", function () {
   const pet = getDetailPet();
@@ -366,12 +378,14 @@ $(document).on("show.bs.modal", "#editPetModal", function () {
   $("#editPetSex").val(pet.sex);
   $("#editPetBirthDate").val(pet.birth_date);
   $("#editPetStatus").val(pet.status);
+  updateEditPetStatusWarning();
   $("#editPetDescription").val(pet.description || "");
 });
 
 // Admin: "Save changes"
 $(document).on("submit", "#editPetForm", function (e) {
   e.preventDefault();
+  checkTrimmedFields(this);
   $(this).addClass("was-validated");
   if (!this.checkValidity()) {
     return;
