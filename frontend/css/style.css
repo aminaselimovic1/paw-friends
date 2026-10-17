@@ -670,15 +670,16 @@ a.text-link:not([href]) {
 
 /* ---------- 24. Page loader (index.html) ---------- */
 /* The spinner in <main> while the first view loads (the router replaces it).
-   It starts invisible and appears only after 300 ms: the animation has no
+   It starts invisible and appears only after 1 second: the animation has no
    length (0s), only a delay, and "forwards" keeps its end state (opacity 1).
-   So a fast load never shows it, and a slow one shows it without flashing.
+   Why 1 second: shorter waits don't need a loading sign (a usability rule of
+   thumb), and with 300 ms it flashed on refreshes with the cache disabled.
    min-height: it fills the main area, so the page doesn't look empty. */
 .view-loader {
   min-height: 60vh;
   color: var(--color-accent); /* Bootstrap's spinner uses the text colour */
   opacity: 0;
-  animation: view-loader-appear 0s 0.3s forwards;
+  animation: view-loader-appear 0s 1s forwards;
 }
 
 @keyframes view-loader-appear {
