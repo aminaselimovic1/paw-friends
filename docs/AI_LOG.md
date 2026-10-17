@@ -112,7 +112,7 @@
   How I fixed it: I reported it to Claude Code. It found the Bootstrap rule and added `.site-brand:focus` to the logo's colour rule in style.css. It then checked that the focused logo stays terracotta.
 
 - Headings with a Bootstrap size class weren't bold (home view and footer).
-  What was wrong: the heading rule in style.css (h1–h6: bold and brown) was weaker than Bootstrap's .h5 and .h6 classes, because a class beats a tag name. So <h3 class="h5"> (pet card and step titles) and <h2 class="h6"> (footer titles) had weight 500, and the card titles were grey instead of brown.
+  What was wrong: the heading rule in style.css (h1–h6: bold and brown) was weaker than Bootstrap's .h5 and .h6 classes, because a class beats a tag name. So `<h3 class="h5">` (pet card and step titles) and `<h2 class="h6">` (footer titles) had weight 500, and the card titles were grey instead of brown.
   How it was noticed: Claude Code noticed it in a screenshot while testing the router and confirmed it by measuring the styles in the browser.
   How it was fixed: I asked Claude Code to fix it ("Fix the headings first"). It added .h1–.h6 to the heading rule, and the measured styles were bold and brown afterwards.
 
