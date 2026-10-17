@@ -5,8 +5,8 @@
 //
 // Reuses: samplePets (pets.js), sampleShelters (shelters.js), sampleUsers,
 // findUserById and demoAdminId (manage-users.js), sampleAdoptionApplications
-// and formatDate (my-applications.js), findPetById (vet-dashboard.js) and
-// getApplicantName (manage-applications.js).
+// and formatDate (my-applications.js), fillPetLink (vet-dashboard.js), and
+// getApplicantName and getPetName (manage-applications.js).
 
 // The id for a new item on the manage pages: one more than the highest id so
 // far. (Not length + 1: after a delete, that could give an id that is still
@@ -37,14 +37,13 @@ function getPendingApplications() {
 // .text() and .attr() put the data in as plain text, never as HTML.
 function createPendingRow(application) {
   const row = $($("#adminPendingRowTemplate").html());
-  const pet = findPetById(application.pet_id);
   row.find(".pending-applicant").text(getApplicantName(application));
-  row.find(".pending-pet").text(pet.name).attr("href", "#pet-details?id=" + pet.id);
+  fillPetLink(row.find(".pending-pet"), application.pet_id);
   row.find(".pending-date").text(formatDate(application.created_at));
   // Opens the applications page with this review open (manage-applications.js)
   row.find(".pending-review")
     .attr("href", "#manage-applications?review=" + application.id)
-    .attr("aria-label", "Review " + getApplicantName(application) + "'s application for " + pet.name);
+    .attr("aria-label", "Review " + getApplicantName(application) + "'s application for " + getPetName(application));
   return row;
 }
 

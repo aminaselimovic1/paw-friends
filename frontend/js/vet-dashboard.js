@@ -35,6 +35,19 @@ function findPetById(petId) {
   });
 }
 
+// Puts the pet's name in a link to its details page. A pet that no longer
+// exists becomes "Unknown pet" without an href, so it's plain text instead of
+// a link to "Pet not found" (.text-link:not([href]) in style.css).
+// removeAttr matters in the review modal, which is reused for every application.
+function fillPetLink(link, petId) {
+  const pet = findPetById(petId);
+  if (pet === undefined) {
+    link.text("Unknown pet").removeAttr("href");
+  } else {
+    link.text(pet.name).attr("href", "#pet-details?id=" + pet.id);
+  }
+}
+
 // The pets a shelter vet looks after: every pet still in a shelter
 // (adopted pets have gone home)
 function getPetsInShelters() {
@@ -192,13 +205,14 @@ function createVetPetRow(pet, needsFollowUp) {
   return row;
 }
 
-// One recent activity: a visit or a vaccination
+// One recent activity: a visit or a vaccination.
+// (Unlike the table rows and follow-ups, the activity isn't limited to pets
+// that exist, so the pet can be missing: fillPetLink then shows "Unknown pet".)
 function createActivityItem(activity) {
   const item = $($("#vetActivityTemplate").html());
-  const pet = findPetById(activity.pet_id);
 
   item.find(".activity-icon").addClass(activity.kind === "visit" ? "bi-clipboard2-pulse" : "bi-shield-plus");
-  item.find(".activity-pet").text(pet.name).attr("href", "#pet-details?id=" + pet.id);
+  fillPetLink(item.find(".activity-pet"), activity.pet_id);
   item.find(".activity-text").text(activity.text);
   item.find(".activity-date").text(formatDate(activity.date));
   item.find(".activity-vet").text(activity.vet_id === demoVet.id ? "You" : activity.vet_name);

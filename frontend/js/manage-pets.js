@@ -195,6 +195,11 @@ $(document).on("click", ".delete-pet", function () {
 
 $(document).on("click", "#confirmDeletePet", function () {
   const pet = findPetById(Number($(this).attr("data-id")));
+  // Check again: for a pet with history the button is only hidden (d-none),
+  // so a script could still click it. From M4 the backend checks this too.
+  if (pet === undefined || countPetHistory(pet.id) > 0) {
+    return;
+  }
   // splice(index, 1) removes one item from the array at that position
   samplePets.splice(samplePets.indexOf(pet), 1);
   bootstrap.Modal.getInstance(document.getElementById("petDeleteModal")).hide();

@@ -95,6 +95,11 @@
   Prompt: "Here are some bugs / improvements that I've noticed." (with my bug report of 5 items)
   It fixed the footer icons, the underline on the Facebook icon, emails like "a@a" being accepted, and the dashboard numbers at different heights (see "Where the AI was wrong"). On my request, the vet dashboard's "Add" buttons now open the forms on the dashboard instead of going to the pet's page. Before testing, I had also asked for demo accounts on the login card: "for testing Login, add an email and password on the card (for now, will be removed later) so that we can check what a successful login with a correct email and password looks like." It shows one account per role, and the password is still not checked.
 
+- Claude Code (same setup): fixed the bugs from my second round of manual testing.
+  Prompt: "I tested every page in all four roles. The site is in good shape for the first milestone, but I found a few more real bugs. First, please fix the high priority bugs: 1. Three pages crash if a pet goes missing. (…) 2. Pages aren’t protected by role. (…)"
+  Pages now show "Unknown pet" instead of crashing, and router.js has a list of which roles may open each page. Guests are sent to the login page and logged-in users to Home. Claude Code found the same "button only hidden" problem in 4 more places and a missing "Photo coming soon" box on My applications, and I asked it to fix them too: "Fix the problems that you've found a well". After my next report ("New issue: the vet dashboard has the same crash. (…)"), it fixed the vet dashboard. It also asked before doing my two suggestions, and I accepted both: "Unknown pet" is now plain text, and logging in goes back to the page you asked for (#login?next=…).
+  I kept it as generated.
+
 ### Where the AI was wrong
 - The PawFriends logo in the navbar turned black after a click (SPA shell).
   What was wrong: the CSS set the logo's terracotta colour only for its normal and hover states. After a click, the link keeps focus, and Bootstrap's `.navbar-brand:focus` rule (which is more specific than `.site-brand`) coloured it black.
@@ -165,3 +170,13 @@
   What was wrong: the cards centred their content vertically, so in a card whose small text took two lines, the number moved up.
   How I noticed: during my manual testing of the vet dashboard; I asked for the admin dashboard to be checked too.
   How it was fixed: Claude Code aligned the content to the top of the cards (align-items-start) on both dashboards.
+
+- Pages crashed when a pet was missing (manage applications, admin dashboard, My applications, vet dashboard).
+  What was wrong: Claude Code's code used findPetById(…).name without checking that the pet exists, so the pages threw a TypeError and showed empty tables. The pet could go missing because the delete check only hid the Delete button (d-none): its click handler didn't check again, so a script could still delete a pet with applications.
+  How I noticed: during my manual testing, after I removed Rocky with a script. Claude Code's first fix missed the vet dashboard, and I found it in my next round.
+  How it was fixed: I reported it. Claude Code made the pages show "Unknown pet" and made the delete check again in its click handler. It found the same "only hidden" problem in the shelter and user deletes, Approve/Reject and the admin's own role, and fixed those at my request. Then it checked every lookup in the frontend for the same crash.
+
+- A new CSS rule turned the Edit, Delete and Review buttons black (admin pages and vet dashboard).
+  What was wrong: to make "Unknown pet" plain text, Claude Code first wrote `.text-link:not([href])`. The Edit, Delete, Review and Add record buttons also use .text-link and never have an href, so they lost their terracotta colour and underline.
+  How it was noticed: Claude Code saw it in a screenshot of Manage applications, before handing the change over.
+  How it was fixed: Claude Code limited the rule to links (`a.text-link:not([href])`) and checked the buttons' styles afterwards.

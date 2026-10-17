@@ -43,7 +43,12 @@ $(document).on("submit", "#loginForm", function (e) {
   }
 
   setRole(getDemoRoleForEmail($("#loginEmail").val())); // from roles.js
-  window.location.hash = "#home";
+
+  // Back to the page that sent you here (#login?next=my-applications), or
+  // home. Only the part after # changes, so "next" can't lead to another
+  // site, and the router still checks that the new role may open the page.
+  const next = getHashParam("next"); // from router.js
+  window.location.hash = next ? "#" + next : "#home";
 });
 
 

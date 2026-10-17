@@ -11,6 +11,49 @@ const routes = [
   "manage-pets", "manage-shelters", "manage-users", "manage-applications"
 ];
 
+// Pages that only some roles may open. Pages not listed here are open to
+// everyone. This only protects the pages in the browser: from M4 the backend
+// also checks the role in the JWT token on every request.
+const routeRoles = {
+  "login": ["guest"],
+  "register": ["guest"],
+  "my-applications": ["user"],
+  "profile": ["user", "vet", "admin"],
+  "vet-dashboard": ["vet"],
+  "admin-dashboard": ["admin"],
+  "manage-pets": ["admin"],
+  "manage-shelters": ["admin"],
+  "manage-users": ["admin"],
+  "manage-applications": ["admin"]
+};
+
+function canOpenRoute(route, role) {
+  const allowedRoles = routeRoles[route];
+  return allowedRoles === undefined || allowedRoles.includes(role);
+}
+
+// If the current role can't open this page, goes somewhere else instead:
+// guests to the login page, logged-in users to the home page.
+// replace() swaps the address without a new history entry, so the Back
+// button doesn't lead to this page again. Returns true if it redirected.
+function redirectIfNotAllowed(route) {
+  const role = getRole(); // from roles.js
+  if (canOpenRoute(route, role)) {
+    return false;
+  }
+  if (role === "guest") {
+    // "next" remembers the page (with its "?…" part), so logging in can go
+    // back there (auth.js): #my-applications -> #login?next=my-applications.
+    // encodeURIComponent keeps a "?" or "=" in it from being read as part of
+    // the login page's own address.
+    const page = window.location.hash.substring(1);
+    window.location.replace("#login?next=" + encodeURIComponent(page));
+  } else {
+    window.location.replace("#home");
+  }
+  return true;
+}
+
 // "#pets" -> "pets", "#pet-details?id=2" -> "pet-details".
 // Everything after "?" is ignored here. An empty hash means the home page.
 function getRouteFromHash() {
@@ -28,6 +71,11 @@ function getHashParam(name) {
 function loadView(route) {
   if (!routes.includes(route)) {
     route = "not-found";
+  }
+
+  // The new address causes a hashchange, which loads the right view
+  if (redirectIfNotAllowed(route)) {
+    return;
   }
 
   $("#app").load("views/" + route + ".html", function (response, status) {

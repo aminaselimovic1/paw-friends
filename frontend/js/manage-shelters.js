@@ -187,6 +187,11 @@ $(document).on("click", ".delete-shelter", function () {
 
 $(document).on("click", "#confirmDeleteShelter", function () {
   const shelter = findShelterById(Number($(this).attr("data-id")));
+  // Check again: for a shelter with pets the button is only hidden (d-none),
+  // so a script could still click it. From M4 the backend checks this too.
+  if (shelter === undefined || getShelterPets(shelter.id).length > 0) {
+    return;
+  }
   // splice(index, 1) removes one item from the array at that position
   sampleShelters.splice(sampleShelters.indexOf(shelter), 1);
   bootstrap.Modal.getInstance(document.getElementById("shelterDeleteModal")).hide();

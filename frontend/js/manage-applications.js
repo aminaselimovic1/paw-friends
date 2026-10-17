@@ -4,7 +4,7 @@
 // becomes requests to the REST API, and the backend applies the same rules.
 //
 // Reuses: sampleAdoptionApplications, statusBadges, formatDate
-// (my-applications.js), findPetById (vet-dashboard.js), findUserById and
+// (my-applications.js), findPetById and fillPetLink (vet-dashboard.js), findUserById and
 // demoAdminId (manage-users.js) and getHashParam (router.js).
 
 // The application shown in the review modal (its id), or null
@@ -20,6 +20,12 @@ function findApplicationById(applicationId) {
 function getApplicantName(application) {
   const user = findUserById(application.user_id);
   return user ? user.name : "Unknown user";
+}
+
+// The pet's name, or a placeholder if the pet no longer exists
+function getPetName(application) {
+  const pet = findPetById(application.pet_id);
+  return pet ? pet.name : "Unknown pet";
 }
 
 // The other pending applications for the same pet
@@ -56,9 +62,8 @@ function getFilteredApplications() {
   const status = $("#manageApplicationStatus").val(); // "pending", "approved", "rejected" or "all"
   return sampleAdoptionApplications
     .filter(function (application) {
-      const petName = findPetById(application.pet_id).name;
       const matchesSearch = getApplicantName(application).toLowerCase().includes(search)
-        || petName.toLowerCase().includes(search);
+        || getPetName(application).toLowerCase().includes(search);
       return matchesSearch && (status === "all" || application.status === status);
     })
     .sort(function (a, b) { return b.created_at.localeCompare(a.created_at); });
@@ -74,13 +79,13 @@ function createManageApplicationRow(application) {
 
   row.find(".application-applicant").text(getApplicantName(application));
   row.find(".application-email").text(user ? user.email : "");
-  row.find(".application-pet").text(pet.name).attr("href", "#pet-details?id=" + pet.id);
-  row.find(".application-shelter").text(pet.shelter_name);
+  fillPetLink(row.find(".application-pet"), application.pet_id);
+  row.find(".application-shelter").text(pet ? pet.shelter_name : "");
   row.find(".application-date").text(formatDate(application.created_at));
   row.find(".application-status").text(badge.label).addClass(badge.cssClass);
   row.find(".review-application")
     .attr("data-id", application.id)
-    .attr("aria-label", "Review " + getApplicantName(application) + "'s application for " + pet.name);
+    .attr("aria-label", "Review " + getApplicantName(application) + "'s application for " + getPetName(application));
   return row;
 }
 
@@ -102,6 +107,7 @@ function renderManageApplications() {
 // Fills the review modal with one application and opens it
 function openReviewModal(application) {
   const pet = findPetById(application.pet_id);
+  const petName = getPetName(application);
   const user = findUserById(application.user_id);
   const reviewer = findUserById(application.reviewed_by);
   const badge = statusBadges[application.status];
@@ -109,24 +115,29 @@ function openReviewModal(application) {
   const otherCount = getOtherPendingApplications(application).length;
 
   reviewedApplicationId = application.id;
-  $("#reviewTitle").text(getApplicantName(application) + "'s application for " + pet.name);
+  $("#reviewTitle").text(getApplicantName(application) + "'s application for " + petName);
   $("#reviewApplicant").text(getApplicantName(application));
   $("#reviewEmail").text(user ? user.email : "");
-  $("#reviewPet").text(pet.name).attr("href", "#pet-details?id=" + pet.id);
-  $("#reviewShelter").text(pet.shelter_name);
+  fillPetLink($("#reviewPet"), application.pet_id);
+  $("#reviewShelter").text(pet ? pet.shelter_name : "");
   $("#reviewDate").text(formatDate(application.created_at));
   $("#reviewStatus").text(badge.label).attr("class", "badge " + badge.cssClass);
   $("#reviewReviewer").text(reviewer ? reviewer.name : "");
   $(".review-reviewer").toggleClass("d-none", reviewer === undefined);
   $("#reviewMessage").text(application.message || "No message.");
 
-  // Pending: what approving will do, and the Approve / Reject buttons
-  let note = "Approving marks " + pet.name + " as adopted.";
+  // Pending: what approving will do, and the Approve / Reject buttons.
+  // A pet that no longer exists can't be adopted, so then only Reject is shown.
+  let note = "Approving marks " + petName + " as adopted.";
   if (otherCount > 0) {
-    note += " The other " + otherCount + " pending application(s) for " + pet.name + " will be rejected.";
+    note += " The other " + otherCount + " pending application(s) for " + petName + " will be rejected.";
+  }
+  if (pet === undefined) {
+    note = "This pet is no longer on PawFriends, so the application can only be rejected.";
   }
   $("#reviewNote").text(note).toggleClass("d-none", !isPending);
   $(".review-action").toggleClass("d-none", !isPending);
+  $("#approveApplication").toggleClass("d-none", !isPending || pet === undefined);
 
   bootstrap.Modal.getOrCreateInstance(document.getElementById("reviewModal")).show();
 }
@@ -175,6 +186,11 @@ function finishReview(message) {
 $(document).on("click", "#approveApplication", function () {
   const application = findApplicationById(reviewedApplicationId);
   const pet = findPetById(application.pet_id);
+  // The button is hidden for a decided application or a pet that no longer
+  // exists, but a script could still click it, so check again here
+  if (application.status !== "pending" || pet === undefined) {
+    return;
+  }
   const otherCount = getOtherPendingApplications(application).length;
   approveApplication(application);
 
@@ -188,7 +204,11 @@ $(document).on("click", "#approveApplication", function () {
 
 $(document).on("click", "#rejectApplication", function () {
   const application = findApplicationById(reviewedApplicationId);
+  // Only a pending application can be rejected (the button is hidden otherwise)
+  if (application.status !== "pending") {
+    return;
+  }
   rejectApplication(application);
   finishReview(getApplicantName(application) + "'s application for "
-    + findPetById(application.pet_id).name + " was rejected.");
+    + getPetName(application) + " was rejected.");
 });

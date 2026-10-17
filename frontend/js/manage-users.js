@@ -174,7 +174,10 @@ $(document).on("submit", "#userForm", function (e) {
     const user = findUserById(Number(id));
     user.name = name;
     user.email = email;
-    user.role = role;
+    // Your own role stays: the field is only disabled, and a script could still change its value
+    if (user.id !== demoAdminId) {
+      user.role = role;
+    }
     showUserSaved("Changes to " + name + " were saved.");
   }
   bootstrap.Modal.getInstance(document.getElementById("userFormModal")).hide();
@@ -188,17 +191,23 @@ $(document).on("hidden.bs.modal", "#userFormModal", function () {
 
 // ---------- Delete ----------
 
+// Why this user can't be deleted, or "" if they can
+function getUserDeleteBlockReason(user) {
+  const historyCount = countUserHistory(user.id);
+  if (user.id === demoAdminId) {
+    return "You can't delete your own account.";
+  }
+  if (historyCount > 0) {
+    return user.name + " can't be deleted: " + historyCount
+      + " application(s) or health record(s) belong to this account and would lose their owner.";
+  }
+  return "";
+}
+
 // Opens the delete modal: it asks first, or explains why the user can't be deleted
 $(document).on("click", ".delete-user", function () {
   const user = findUserById(Number($(this).attr("data-id")));
-  const historyCount = countUserHistory(user.id);
-  let reason = "";
-  if (user.id === demoAdminId) {
-    reason = "You can't delete your own account.";
-  } else if (historyCount > 0) {
-    reason = user.name + " can't be deleted: " + historyCount
-      + " application(s) or health record(s) belong to this account and would lose their owner.";
-  }
+  const reason = getUserDeleteBlockReason(user);
 
   $("#userDeleteTitle").text("Delete " + user.name + "?");
   $("#userDeleteText").text(reason || "This removes the account. It can't be undone.");
@@ -209,6 +218,11 @@ $(document).on("click", ".delete-user", function () {
 
 $(document).on("click", "#confirmDeleteUser", function () {
   const user = findUserById(Number($(this).attr("data-id")));
+  // Check again: when the user can't be deleted the button is only hidden
+  // (d-none), so a script could still click it. From M4 the backend checks this too.
+  if (user === undefined || getUserDeleteBlockReason(user) !== "") {
+    return;
+  }
   // splice(index, 1) removes one item from the array at that position
   sampleUsers.splice(sampleUsers.indexOf(user), 1);
   bootstrap.Modal.getInstance(document.getElementById("userDeleteModal")).hide();

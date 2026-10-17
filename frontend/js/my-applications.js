@@ -59,11 +59,14 @@ function getMyApplications() {
     .filter(function (application) { return application.user_id === sampleUser.id; })
     .sort(function (a, b) { return b.created_at.localeCompare(a.created_at); })
     .map(function (application) {
-      const pet = samplePets.find(function (p) { return p.id === application.pet_id; });
+      const foundPet = samplePets.find(function (p) { return p.id === application.pet_id; });
+      // A pet that no longer exists gets a placeholder, so the card can still be shown
+      const pet = foundPet || { name: "Unknown pet", photo_url: null, shelter_name: "Unknown" };
       return {
         id: application.id, pet_id: application.pet_id, status: application.status,
         created_at: application.created_at, pet_name: pet.name,
-        pet_photo_url: pet.photo_url, shelter_name: pet.shelter_name
+        pet_photo_url: pet.photo_url, shelter_name: pet.shelter_name,
+        pet_exists: foundPet !== undefined
       };
     });
 }
@@ -91,16 +94,27 @@ function createApplicationCard(application) {
   const card = $($("#applicationCardTemplate").html());
   const badge = statusBadges[application.status];
 
-  card.find(".application-photo")
-    .attr("src", application.pet_photo_url)
-    .attr("alt", application.pet_name);
+  // The photo if the pet has one, otherwise the "Photo coming soon" box
+  if (application.pet_photo_url) {
+    card.find("img.application-photo")
+      .attr("src", application.pet_photo_url)
+      .attr("alt", application.pet_name);
+    card.find(".pet-photo-placeholder").remove();
+  } else {
+    card.find("img.application-photo").remove();
+  }
   card.find(".application-pet-name").text(application.pet_name);
   card.find(".application-status").text(badge.label).addClass(badge.cssClass);
   card.find(".application-date").text(formatDate(application.created_at));
   card.find(".application-shelter").text(application.shelter_name);
-  card.find(".application-details-link")
-    .attr("href", "#pet-details?id=" + application.pet_id)
-    .attr("aria-label", "View details about " + application.pet_name);
+  // "View details" only for a pet that still exists (otherwise it would open "Pet not found")
+  if (application.pet_exists) {
+    card.find(".application-details-link")
+      .attr("href", "#pet-details?id=" + application.pet_id)
+      .attr("aria-label", "View details about " + application.pet_name);
+  } else {
+    card.find(".application-details-link").remove();
+  }
   return card;
 }
 

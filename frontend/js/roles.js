@@ -26,9 +26,11 @@ function showLinksFor(role) {
   $("#roleSelect").val(role);
 }
 
-// A different role is picked in the demo menu
+// A different role is picked in the demo menu. The new role may not be
+// allowed on the current page, so check it again (router.js).
 $(document).on("change", "#roleSelect", function () {
   setRole($(this).val());
+  redirectIfNotAllowed(getRouteFromHash());
 });
 
 // "Log out" (in the navbar, or a .logout-action link in a view) makes you

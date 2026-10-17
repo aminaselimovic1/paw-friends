@@ -369,6 +369,16 @@ h1, h2, h3, h4, h5, h6,
   color: var(--color-accent-dark);
 }
 
+/* An <a class="text-link"> without an href isn't a link (e.g. "Unknown pet",
+   a pet that no longer exists), so it looks like normal text.
+   Only <a>: the .link-button <button>s (Edit, Delete, Review) never have an
+   href and must keep their link look. (0,2,1) beats .text-link:hover (0,2,0). */
+a.text-link:not([href]) {
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
 
 /* ---------- 15. About page ---------- */
 /* A shorter hero: used together with .hero, and comes later in the file,
