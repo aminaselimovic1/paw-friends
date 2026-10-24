@@ -33,13 +33,8 @@
 
 - Claude Code (same setup): built the SPA shell with the navbar and footer, and added Bootstrap Icons.
   Prompt: "add the Bootstrap icons now for the navbar and footer, matching my project's topic"
-  I approved Bootstrap Icons, a new library (AGENTS.md says to ask first). It created frontend/index.html, which loads Bootstrap, Bootstrap Icons and style.css (the CDN files with integrity hashes) and has the navbar, the footer and an empty <main id="app"> for the views. At my request, it also added Bootstrap Icons to the Technology stack in AGENTS.md.
+  I approved Bootstrap Icons, a new library (AGENTS.md says to ask first). It created frontend/index.html, which loads Bootstrap, Bootstrap Icons and style.css (the CDN files with integrity hashes) and has the navbar, the footer and an empty `<main id="app">` for the views. At my request, it also added Bootstrap Icons to the Technology stack in AGENTS.md.
   I kept it as generated, except for one bug in the logo colour (see "Where the AI was wrong").
-
-- Claude Code (same setup): built the SPA router, frontend/js/router.js.
-  Prompt: "let's continue with the router and then I will commit the changes, give me a message I can add."
-  It's a hash router with jQuery: #pets loads views/pets.html into <main id="app">. Only the pages in its list can load, and anything else shows the new views/not-found.html. It also highlights the current navbar link. Later I asked it to "make the router accept an id", so #pet-details?id=2 works: getHashParam("id") returns "2".
-  I kept it as generated.
 
 - Claude Code (same setup): built a demo role switcher for the navbar, frontend/js/roles.js.
   Prompt: "Start with the role switcher. I added the images so that step is done as well."
@@ -58,7 +53,7 @@
 
 - Claude Code (same setup): built the My applications page.
   Prompt: "Let's work on the My applications page. For our first functional version, implement these in order: 1. Page header and application count. 2. Application cards with pet photo, name, date, shelter, and status. 3. A View details action. 4. A status filter. 5. An empty state. 6. Optional withdrawal and status history, once the underlying logic exists."
-  It built items 1–5 with sample data in frontend/js/my-applications.js (same field names as the database) and a card <template> in the view, filled in with .text() so the data is never run as HTML. The router now fires a viewLoaded event after each view, so page scripts know when to draw. Item 6 waits for the backend, because withdrawal and status history need schema changes.
+  It built items 1–5 with sample data in frontend/js/my-applications.js (same field names as the database) and a card `<template>` in the view, filled in with .text() so the data is never run as HTML. The router now fires a viewLoaded event after each view, so page scripts know when to draw. Item 6 waits for the backend, because withdrawal and status history need schema changes.
   I kept it as generated.
 
 - Claude Code (same setup, frontend agent): built the Pets page.
