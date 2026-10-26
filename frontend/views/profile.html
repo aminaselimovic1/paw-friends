@@ -1,0 +1,169 @@
+<!-- Profile view (user, vet and admin). Filled in and handled by js/profile.js.
+     Parts with data-roles are shown only to those roles (see js/roles.js). -->
+<section class="py-5">
+  <div class="container">
+
+    <!-- ===== A. Profile header: initials, name and role =====
+         No registration date: the users table has no created_at column. -->
+    <div class="form-card d-flex flex-wrap align-items-center gap-3 mb-4">
+      <div id="profileInitials" aria-hidden="true"
+           class="profile-avatar d-flex align-items-center justify-content-center flex-shrink-0"></div>
+      <div>
+        <h1 id="profileName" class="h3 mb-1"></h1>
+        <span id="profileRole" class="badge role-badge"></span>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- ===== B. Personal information ===== -->
+      <div class="col-lg-7">
+        <div class="form-card h-100">
+          <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="h5 mb-0">Personal information</h2>
+            <!-- flex-shrink-0: on phones the heading wraps, not the button -->
+            <button type="button" id="editProfileButton" class="outline-button flex-shrink-0">
+              <i class="bi bi-pencil" aria-hidden="true"></i> Edit
+            </button>
+          </div>
+          <p class="small text-body-secondary mb-4 d-none" data-roles="user">
+            Shelters use these details to contact you about your applications.
+          </p>
+
+          <div id="profileSaved" class="alert alert-success d-none" role="status">
+            Your changes were saved.
+          </div>
+
+          <!-- Read-only view (dl = description list: a term and its value) -->
+          <dl id="profileInfo" class="row mb-0">
+            <dt class="col-sm-4">Full name</dt>
+            <dd id="infoName" class="col-sm-8"></dd>
+            <dt class="col-sm-4">Email</dt>
+            <dd id="infoEmail" class="col-sm-8"></dd>
+            <dt class="col-sm-4">Phone</dt>
+            <dd id="infoPhone" class="col-sm-8"></dd>
+            <dt class="col-sm-4">City</dt>
+            <dd id="infoCity" class="col-sm-8 mb-0"></dd>
+          </dl>
+
+          <!-- Edit form: shown instead of the list after "Edit" -->
+          <form id="profileForm" class="d-none" novalidate>
+            <div class="mb-3">
+              <label for="editName" class="form-label">Full name</label>
+              <input type="text" class="form-control" id="editName" name="name"
+                     minlength="2" maxlength="100" autocomplete="name" required>
+              <div class="invalid-feedback">Enter your full name (2–100 characters).</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="editEmail" class="form-label">Email</label>
+              <!-- pattern: the email also needs a dot and an ending like .com (type="email" alone accepts "a@a") -->
+              <input type="email" class="form-control" id="editEmail" pattern="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}" name="email"
+                     autocomplete="email" required>
+              <!-- The text changes when another account already uses the email (profile.js) -->
+              <div id="editEmailFeedback" class="invalid-feedback">Enter a valid email address, e.g. name@example.com.</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="editPhone" class="form-label">
+                Phone <span class="text-body-secondary">(optional)</span>
+              </label>
+              <!-- pattern: the same as on register (6 to 15 digits, + only at the start) -->
+              <input type="tel" class="form-control" id="editPhone" name="phone"
+                     pattern=" *\+?( ?[0-9]){6,15} *" autocomplete="tel">
+              <div class="invalid-feedback">Enter 6 to 15 digits, with + only at the start, e.g. +387 61 123 456.</div>
+            </div>
+
+            <div class="mb-4">
+              <label for="editCity" class="form-label">
+                City <span class="text-body-secondary">(optional)</span>
+              </label>
+              <input type="text" class="form-control" id="editCity" name="city"
+                     maxlength="100" autocomplete="address-level2">
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+              <button type="submit" class="accent-button">Save changes</button>
+              <button type="button" id="cancelProfileButton" class="outline-button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <!-- ===== C. Account security ===== -->
+        <div class="form-card mb-4">
+          <h2 class="h5">Account security</h2>
+          <p class="small text-body-secondary mb-4">
+            Account email: <span id="securityEmail"></span>
+          </p>
+
+          <div id="passwordChanged" class="alert alert-success d-none" role="status">
+            Your password was changed.
+          </div>
+
+          <form id="passwordForm" novalidate>
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label">Current password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="currentPassword"
+                       autocomplete="current-password" required>
+                <button type="button" class="password-toggle" aria-label="Show password">
+                  <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+                <div class="invalid-feedback">Enter your current password.</div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New password</label>
+              <div class="input-group has-validation">
+                <!-- pattern: not only spaces (the same as on register) -->
+                <input type="password" class="form-control" id="newPassword"
+                       minlength="8" pattern=".*\S.*" autocomplete="new-password" required>
+                <button type="button" class="password-toggle" aria-label="Show password">
+                  <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+                <div class="invalid-feedback">Use at least 8 characters, not only spaces.</div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="confirmNewPassword" class="form-label">Confirm new password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="confirmNewPassword"
+                       autocomplete="new-password" required>
+                <button type="button" class="password-toggle" aria-label="Show password">
+                  <i class="bi bi-eye" aria-hidden="true"></i>
+                </button>
+                <div class="invalid-feedback">The passwords don't match.</div>
+              </div>
+            </div>
+
+            <button type="submit" class="accent-button w-100">Change password</button>
+          </form>
+        </div>
+
+        <!-- ===== E. Account actions ===== -->
+        <div class="form-card">
+          <h2 class="h5 mb-3">Account</h2>
+          <div class="d-flex flex-wrap gap-2">
+            <!-- Each role gets a link to its own main page -->
+            <a href="#my-applications" class="accent-button d-none" data-roles="user">
+              <i class="bi bi-clipboard-heart" aria-hidden="true"></i> My applications
+            </a>
+            <a href="#vet-dashboard" class="accent-button d-none" data-roles="vet">
+              <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Vet dashboard
+            </a>
+            <a href="#admin-dashboard" class="accent-button d-none" data-roles="admin">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i> Admin dashboard
+            </a>
+            <!-- logout-action: handled in roles.js, like the navbar's Log out -->
+            <a href="#home" class="outline-button logout-action">
+              <i class="bi bi-box-arrow-right" aria-hidden="true"></i> Log out
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

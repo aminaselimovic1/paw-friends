@@ -1,0 +1,689 @@
+/* =========================================================
+   PawFriends - main stylesheet
+   Loaded once by the SPA shell, AFTER Bootstrap 5,
+   so these rules can override Bootstrap's defaults.
+   ========================================================= */
+
+/* Nunito font from Google Fonts (an @import must be the first rule in the file) */
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap");
+
+
+/* ---------- 1. Colors and fonts (change them here, in one place) ---------- */
+:root {
+  --color-bg: #fffaf0;            /* main page background (light cream) */
+  --color-bg-alt: #f8efdc;        /* every other section (darker cream) */
+  --color-surface: #fffdf8;       /* cards and boxes */
+  --color-surface-transparent: rgba(255, 253, 248, 0.9); /* hero box, 90% opaque */
+  --color-text: #444444;          /* normal text */
+  --color-heading: #4a3b2f;       /* headings (warm dark brown) */
+  --color-accent: #a8552a;        /* buttons, numbers, underlines (terracotta) */
+  --color-accent-dark: #8a4420;   /* accent on hover */
+  --color-white: #ffffff;
+  --font-main: "Nunito", sans-serif;
+  --shadow-soft: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ---------- 2. General page styles ---------- */
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* .h1-.h6 too: otherwise Bootstrap's size classes (e.g. <h3 class="h5">)
+   set their own weight and colour, because a class beats a tag name */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+/* Background for every other section, so sections are easy to tell apart */
+.section-alt {
+  background-color: var(--color-bg-alt);
+}
+
+
+/* ---------- 3. Buttons (links styled as buttons) ---------- */
+/* Main accent button: "Browse pets", "View details" */
+.accent-button {
+  display: inline-block;
+  padding: 8px 32px;
+  border: 0;               /* a <button> has a browser border by default */
+  border-radius: 5px;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.accent-button:hover {
+  background-color: var(--color-accent-dark);
+  color: var(--color-white);
+}
+
+
+/* ---------- 4. Section titles (heading with a short line under it) ---------- */
+/* h1 too: on Pets the section title is the page's main heading */
+.section-title h1,
+.section-title h2 {
+  font-size: 32px;
+}
+
+/* The 50px x 3px accent line under the heading */
+.section-title h1::after,
+.section-title h2::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 3px;
+  margin: 15px auto 0;
+  background-color: var(--color-accent);
+}
+
+
+/* ---------- 5. Home: hero ---------- */
+.hero {
+  min-height: 70vh;
+  background-color: var(--color-bg-alt);  /* shown until hero.jpg exists */
+  background-image: url("../assets/images/hero.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+/* The semi-transparent box in the middle of the hero */
+.hero-box {
+  padding: 30px 20px;
+  background-color: var(--color-surface-transparent);
+  border-top: 4px solid var(--color-accent);
+}
+
+.hero-box h1 {
+  font-size: 36px;
+}
+
+/* Phones and small tablets: smaller hero heading */
+@media (max-width: 768px) {
+  .hero-box h1 {
+    font-size: 30px;
+  }
+}
+
+
+/* ---------- 6. Home: stats ---------- */
+.stat-box {
+  padding: 30px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-number {
+  margin-bottom: 0;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 7. Home: featured pets ---------- */
+.pet-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.3s;
+}
+
+/* Hover: the card moves up a little and the pet's name turns accent */
+.pet-card:hover {
+  transform: translateY(-5px);
+}
+
+.pet-card:hover .card-title {
+  color: var(--color-accent);
+}
+
+/* Same height for every photo; cream background if the image is missing */
+.pet-card-img {
+  height: 220px;
+  object-fit: cover;
+  background-color: var(--color-bg-alt);
+}
+
+.pet-breed {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 8. Home: how adoption works ---------- */
+/* Numbered circle above each step */
+.step-number {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;       /* same as height, so the number is vertically centered */
+  border-radius: 50%;      /* turns the square into a circle */
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+/* ---------- 9. Home: call to action ---------- */
+.cta {
+  padding: 80px 0;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+.cta h2 {
+  font-size: 28px;
+  color: var(--color-white);
+}
+
+/* White outline button; colors swap on hover */
+.cta-button {
+  display: inline-block;
+  padding: 12px 40px;
+  border: 2px solid var(--color-white);
+  border-radius: 4px;
+  color: var(--color-white);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: var(--color-white);
+  color: var(--color-accent);
+}
+
+
+/* ---------- 10. Navbar (shell, every page) ---------- */
+.site-navbar {
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* :focus is needed too: after a click the link keeps focus, and Bootstrap's
+   .navbar-brand:focus rule would otherwise turn it black */
+.site-brand,
+.site-brand:focus {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.site-brand:hover {
+  color: var(--color-accent-dark);
+}
+
+.site-navbar .nav-link {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.site-navbar .nav-link:hover {
+  color: var(--color-accent);
+}
+
+/* The current page's link (the router adds .active), and a dropdown toggle
+   whose menu is open (Bootstrap adds .show). Needed because Bootstrap's
+   .navbar-nav .nav-link.active and .show rules would make them black. */
+.site-navbar .nav-link.active,
+.site-navbar .nav-link.show {
+  color: var(--color-accent);
+}
+
+/* Dropdown menu items: Bootstrap's hover is grey and its .active is blue */
+.site-navbar .dropdown-item:hover,
+.site-navbar .dropdown-item:focus {
+  background-color: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.site-navbar .dropdown-item.active,
+.site-navbar .dropdown-item:active {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* "Log in": outlined version of .accent-button.
+   The 2px border is taken from the padding, so both buttons are the same size. */
+.outline-button {
+  display: inline-block;
+  padding: 6px 30px;
+  border: 2px solid var(--color-accent);
+  border-radius: 5px;
+  background-color: transparent;   /* a <button> has a grey background by default */
+  color: var(--color-accent);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.outline-button:hover {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+
+/* ---------- 11. Footer (shell, every page) ---------- */
+/* Same warm brown as the headings, with cream text */
+.site-footer {
+  background-color: var(--color-heading);
+  color: var(--color-bg);
+}
+
+.footer-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.footer-title {
+  color: var(--color-white);
+}
+
+.site-footer a {
+  color: var(--color-bg-alt);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.footer-social {
+  font-size: 20px;
+}
+
+/* No underline on the social icons: the rule above underlines footer links
+   on hover, and the space after the Facebook icon showed up as a "_".
+   .site-footer .footer-social:hover (3 classes) beats .site-footer a:hover. */
+.site-footer .footer-social:hover {
+  text-decoration: none;
+}
+
+
+/* ---------- 12. Demo bar (Milestone 1 only, above the navbar) ---------- */
+.demo-bar {
+  background-color: var(--color-heading);
+  color: var(--color-bg);
+}
+
+
+/* ---------- 13. Not-found view ---------- */
+.not-found-icon {
+  font-size: 64px;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 14. Forms: login and register ---------- */
+/* The white box around a form */
+.form-card {
+  padding: 40px 30px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Eye button next to a password field. It uses the same border colour
+   as Bootstrap's fields, so it looks like part of the input. */
+.password-toggle {
+  padding: 0 14px;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+}
+
+/* Ticked checkbox: terracotta instead of Bootstrap's blue */
+.form-check-input:checked {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* DEMO (M1 only, remove in M4): the box with the demo accounts on Log in */
+.demo-accounts {
+  padding: 16px;
+  border-radius: 5px;
+  background-color: var(--color-bg-alt);
+}
+
+/* Links in running text, e.g. "Don't have an account? Register" */
+.text-link {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.text-link:hover {
+  color: var(--color-accent-dark);
+}
+
+/* An <a class="text-link"> without an href isn't a link (e.g. "Unknown pet",
+   a pet that no longer exists), so it looks like normal text.
+   Only <a>: the .link-button <button>s (Edit, Delete, Review) never have an
+   href and must keep their link look. (0,2,1) beats .text-link:hover (0,2,0). */
+a.text-link:not([href]) {
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* ---------- 15. About page ---------- */
+/* A shorter hero: used together with .hero, and comes later in the file,
+   so its min-height wins over the 70vh of .hero */
+.hero-small {
+  min-height: 40vh;
+}
+
+/* A left-aligned section title: the underline starts at the left
+   instead of being centred (see .section-title h2::after in block 4) */
+.section-title-left h2::after {
+  margin-left: 0;
+}
+
+/* "Our mission" list: a terracotta tick before each point */
+.check-list i {
+  color: var(--color-accent);
+}
+
+/* "What PawFriends offers" cards */
+.feature-card {
+  padding: 30px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Round terracotta icon badge (offers cards and "Who we serve") */
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 26px;
+}
+
+
+/* ---------- 16. My applications ---------- */
+.application-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;        /* the photo follows the card's rounded corners */
+}
+
+/* The photo fills its column: on top of the card on phones,
+   on the left from 576px up. Cream background if it's missing. */
+.application-photo {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+  background-color: var(--color-bg-alt);
+}
+
+/* Shown when no application matches the filter */
+.empty-state {
+  padding: 60px 20px;
+  border-radius: 5px;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.empty-state-icon {
+  font-size: 56px;
+  color: var(--color-accent);
+}
+
+
+/* ---------- 17. Profile ---------- */
+/* Round badge with the user's initials */
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* The role under the name, e.g. "User" */
+.role-badge {
+  background-color: var(--color-bg-alt);
+  color: var(--color-heading);
+}
+
+
+/* ---------- 18. Pets ---------- */
+/* A page button scrolls back up to the count above the cards. The navbar
+   is sticky (about 56px high), so without this it would cover the count. */
+.pet-results {
+  scroll-margin-top: 70px;
+}
+
+/* The search and filter box: a .form-card with less padding, because it's
+   a toolbar, not a whole form page. Comes later in the file, so it wins. */
+.pet-filters {
+  padding: 24px 20px;
+}
+
+/* Shown instead of a photo when a pet has none (photo_url is null).
+   It also has .pet-card-img (block 7), so it has the same 220px height
+   and cream background as a photo, and every card lines up. */
+.pet-photo-placeholder {
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.pet-photo-placeholder i {
+  font-size: 40px;
+  color: var(--color-accent);
+}
+
+/* Pagination in our colours instead of Bootstrap's blue. Bootstrap's
+   pagination takes its colours from these variables, so changing them is
+   enough. They must be on the same element as .pagination, which sets
+   Bootstrap's values; ours come later in the file, so they win. */
+.pet-pagination {
+  --bs-pagination-color: var(--color-accent);
+  --bs-pagination-hover-color: var(--color-accent-dark);
+  --bs-pagination-hover-bg: var(--color-bg-alt);
+  --bs-pagination-focus-color: var(--color-accent-dark);
+  --bs-pagination-focus-bg: var(--color-bg-alt);
+  --bs-pagination-active-bg: var(--color-accent);
+  --bs-pagination-active-border-color: var(--color-accent);
+}
+
+
+/* ---------- 19. Pet details ---------- */
+/* The big photo, and the "Photo coming soon" box in its place (which also
+   has .pet-photo-placeholder from block 18). It fills the column, has the
+   same height for every pet and is cropped instead of stretched. */
+.pet-detail-photo {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 5px;
+  background-color: var(--color-bg-alt);
+}
+
+/* Phones: a lower photo, so the name is visible without much scrolling */
+@media (max-width: 576px) {
+  .pet-detail-photo {
+    height: 280px;
+  }
+}
+
+/* The white boxes on this page: a .form-card with less padding */
+.detail-card {
+  padding: 24px;
+}
+
+/* Terracotta icons in the "Vaccinations" and "Vet visits" headings */
+.detail-card h3 .bi {
+  color: var(--color-accent);
+}
+
+/* A line between two health records. "+" selects an item only when another
+   item comes right before it, so the first one has no line above it. */
+.health-item + .health-item {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+
+/* ---------- 20. Shelters ---------- */
+/* The same look as the pet cards, without the hover movement */
+.shelter-card {
+  border: none;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+/* The shelter's "logo": its initials in a terracotta circle.
+   border-radius: 50% turns the square into a circle. */
+.shelter-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Terracotta icons in front of the location, address, phone, email and pets */
+.shelter-card .card-body .bi {
+  color: var(--color-accent);
+}
+
+/* The cards show at most 3 lines of the description, ending in "…"; the
+   shelter's details page shows all of it. -webkit-line-clamp is the usual
+   way to do this and works in all modern browsers (it needs the two lines
+   above it); line-clamp is the newer standard name for the same thing.
+   Screen readers still read the whole text. */
+.shelter-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+
+/* ---------- 21. Shelter details ---------- */
+/* A bigger logo in the page header. Used together with .shelter-logo
+   (block 20) and comes later in the file, so these sizes win. */
+.shelter-logo-lg {
+  width: 80px;
+  height: 80px;
+  font-size: 28px;
+}
+
+/* Terracotta icons in the contact box */
+.shelter-contact .bi {
+  color: var(--color-accent);
+}
+
+/* The map box. Leaflet needs it to have a height, otherwise the map is 0px
+   high. Our font instead of Leaflet's (in the popup): this file comes after
+   leaflet.css, so this wins over its .leaflet-container rule. */
+.shelter-map {
+  height: 320px;
+  border-radius: 5px;
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-main);
+}
+
+
+/* ---------- 22. Vet dashboard ---------- */
+/* Terracotta icons in the box headings and the recent activity list */
+.vet-dashboard .detail-card h2 .bi,
+.activity-icon {
+  color: var(--color-accent);
+}
+
+.activity-icon {
+  font-size: 20px;
+}
+
+/* The table takes the white box's colour instead of Bootstrap's white cells.
+   Bootstrap's tables read their colours from variables like this one. */
+.vet-table {
+  --bs-table-bg: transparent;
+}
+
+/* "Find a pet" and "View your patients" scroll here. The navbar is sticky
+   (about 56px high), so without this it would cover the top of the box. */
+.vet-pet-records {
+  scroll-margin-top: 70px;
+}
+
+
+/* ---------- 23. Admin dashboard and manage pages ---------- */
+/* Terracotta icons in the box headings and in the "Manage" links */
+.admin-page .detail-card h2 .bi,
+.admin-manage-links .bi {
+  color: var(--color-accent);
+}
+
+/* The tables take the white box's colour instead of Bootstrap's white cells */
+.admin-table {
+  --bs-table-bg: transparent;
+}
+
+/* A <button> that looks like a text link (Edit, Delete, Review): it does
+   something on the page instead of going to another page, so it's a button.
+   Used together with .text-link for the colour. */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  text-decoration: underline;
+}
+
+/* The "Manage" links: no white background, cream when hovered */
+.admin-manage-links .list-group-item {
+  background-color: transparent;
+}
+
+.admin-manage-links .list-group-item:hover,
+.admin-manage-links .list-group-item:focus {
+  background-color: var(--color-bg-alt);
+}
+
+
+/* ---------- 24. Page loader (index.html) ---------- */
+/* The spinner in <main> while the first view loads (the router replaces it).
+   It starts invisible and appears only after 1 second: the animation has no
+   length (0s), only a delay, and "forwards" keeps its end state (opacity 1).
+   Why 1 second: shorter waits don't need a loading sign (a usability rule of
+   thumb), and with 300 ms it flashed on refreshes with the cache disabled.
+   min-height: it fills the main area, so the page doesn't look empty. */
+.view-loader {
+  min-height: 60vh;
+  color: var(--color-accent); /* Bootstrap's spinner uses the text colour */
+  opacity: 0;
+  animation: view-loader-appear 0s 1s forwards;
+}
+
+@keyframes view-loader-appear {
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,62 @@
+<!-- Contact view: visible to everyone. The form is handled in js/contact.js. -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-7">
+        <div class="form-card">
+          <h1 class="h3 text-center">Contact us</h1>
+          <p class="text-center mb-4">
+            Questions about adopting, a shelter or a pet's health records?
+            Send us a message and we'll get back to you.
+          </p>
+
+          <!-- Shown by js/contact.js after a valid form is sent -->
+          <div id="contactSuccess" class="alert alert-success d-none" role="status">
+            Thank you! Your message has been sent. We'll reply to your email soon.
+          </div>
+
+          <!-- novalidate: turns off the browser's own error bubbles,
+               so Bootstrap's error messages are shown instead -->
+          <form id="contactForm" novalidate>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="contactName" class="form-label">Full name</label>
+                <input type="text" class="form-control" id="contactName" name="name"
+                       minlength="2" maxlength="100" autocomplete="name" required>
+                <div class="invalid-feedback">Enter your full name (2–100 characters).</div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="contactEmail" class="form-label">Email</label>
+                <!-- pattern: the email also needs a dot and an ending like .com (type="email" alone accepts "a@a") -->
+                <input type="email" class="form-control" id="contactEmail" pattern="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}" name="email"
+                       autocomplete="email" required>
+                <div class="invalid-feedback">Enter a valid email address, e.g. name@example.com.</div>
+              </div>
+
+              <div class="col-12">
+                <label for="contactSubject" class="form-label">Subject</label>
+                <input type="text" class="form-control" id="contactSubject" name="subject"
+                       maxlength="150" required>
+                <div class="invalid-feedback">Enter a subject.</div>
+              </div>
+
+              <div class="col-12">
+                <label for="contactMessage" class="form-label">Message</label>
+                <textarea class="form-control" id="contactMessage" name="message" rows="5"
+                          minlength="10" maxlength="1000" required></textarea>
+                <div class="invalid-feedback">Write a message (10–1000 characters).</div>
+              </div>
+
+              <div class="col-12 mt-4">
+                <button type="submit" class="accent-button w-100">
+                  <i class="bi bi-send" aria-hidden="true"></i> Send message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

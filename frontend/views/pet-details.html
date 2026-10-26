@@ -1,0 +1,354 @@
+<!-- Pet details view: visible to everyone. The link decides the pet:
+     #pet-details?id=2 shows the pet with id 2. Milestone 1 uses sample data
+     (js/pets.js and js/pet-details.js).
+     Parts for one role have data-roles (roles.js shows or hides them);
+     parts that depend on the pet's data (status, health records) are shown
+     or hidden by js/pet-details.js. -->
+
+<section class="py-5">
+  <div class="container">
+    <a href="#pets" class="text-link d-inline-block mb-4">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to pets
+    </a>
+
+    <!-- ===== Shown instead of the details when the id is missing or unknown ===== -->
+    <div id="detailNotFound" class="empty-state text-center d-none">
+      <i class="bi bi-search-heart empty-state-icon" aria-hidden="true"></i>
+      <h1 class="h4 mt-3">Pet not found</h1>
+      <p class="mb-4">This pet doesn't exist or is no longer listed.</p>
+      <a href="#pets" class="accent-button">Browse pets</a>
+    </div>
+
+    <div id="detailContent" class="d-none">
+      <div class="row g-4 g-lg-5">
+        <!-- ===== Photo, or the same "Photo coming soon" box as on Pets ===== -->
+        <div class="col-lg-6">
+          <img id="detailPhoto" class="pet-detail-photo" src="" alt="">
+          <div id="detailPhotoPlaceholder"
+               class="pet-detail-photo pet-photo-placeholder d-flex flex-column align-items-center justify-content-center gap-2">
+            <i class="bi bi-camera" aria-hidden="true"></i>
+            <span>Photo coming soon</span>
+          </div>
+        </div>
+
+        <!-- ===== Name, facts, description and the actions ===== -->
+        <div class="col-lg-6">
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+            <h1 id="detailName" class="mb-0"></h1>
+            <span id="detailStatus" class="badge"></span>
+          </div>
+          <p id="detailBreed" class="pet-breed fs-5 mb-4"></p>
+
+          <!-- dl = description list: a term (dt) and its value (dd) -->
+          <dl class="row mb-4">
+            <dt class="col-4">Age</dt>
+            <dd id="detailAge" class="col-8"></dd>
+            <dt class="col-4">Born</dt>
+            <dd id="detailBirthDate" class="col-8"></dd>
+            <dt class="col-4">Sex</dt>
+            <dd id="detailSex" class="col-8"></dd>
+            <dt class="col-4">Shelter</dt>
+            <dd class="col-8 mb-0"><a id="detailShelter" class="text-link" href="#shelters"></a></dd>
+          </dl>
+
+          <!-- Hidden by JS when the pet has no description -->
+          <div id="detailAbout" class="mb-4">
+            <h2 class="h5">About <span class="detail-pet-name"></span></h2>
+            <p id="detailDescription" class="mb-0"></p>
+          </div>
+
+          <!-- ===== Adoption: the sentence depends on the status (JS) ===== -->
+          <div class="form-card detail-card mb-4">
+            <p id="adoptionText" class="mb-0"></p>
+
+            <!-- Only for pets that aren't adopted (JS). Inside, data-roles decides:
+                 users get the button, guests a link to log in. Vets and
+                 admins see neither. -->
+            <div id="adoptionCta" class="d-none">
+              <div data-roles="user" class="d-none mt-3">
+                <button type="button" id="applyButton" class="accent-button">
+                  <i class="bi bi-heart" aria-hidden="true"></i> Apply to adopt
+                </button>
+                <!-- Applications need the backend: nothing is sent or saved -->
+                <div id="applyPlaceholder" class="alert alert-info mt-3 mb-0 d-none" role="status">
+                  Online adoption applications aren't open yet. They will work once
+                  PawFriends is connected to its server. Nothing has been sent.
+                </div>
+              </div>
+              <p data-roles="guest" class="d-none mt-3 mb-0">
+                <a href="#login" class="text-link">Log in</a> or
+                <a href="#register" class="text-link">register</a>
+                to apply to adopt <span class="detail-pet-name"></span>.
+              </p>
+            </div>
+          </div>
+
+          <!-- ===== Admin: edit this pet (the button opens a modal form) ===== -->
+          <div data-roles="admin" class="d-none">
+            <button type="button" class="outline-button"
+                    data-bs-toggle="modal" data-bs-target="#editPetModal">
+              <i class="bi bi-pencil" aria-hidden="true"></i> Edit pet details
+            </button>
+          </div>
+
+          <!-- ===== Vet: add to the health history (each button opens a modal form) ===== -->
+          <div data-roles="vet" class="d-none">
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" class="outline-button"
+                      data-bs-toggle="modal" data-bs-target="#vetRecordModal">
+                <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Add vet record
+              </button>
+              <button type="button" class="outline-button"
+                      data-bs-toggle="modal" data-bs-target="#vaccinationModal">
+                <i class="bi bi-shield-plus" aria-hidden="true"></i> Add vaccination
+              </button>
+            </div>
+          </div>
+
+          <!-- After a modal form is saved (vet and admin only); JS sets the text -->
+          <div data-roles="vet admin" class="d-none">
+            <div id="detailSaved" class="alert alert-success mt-3 mb-0 d-none" role="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Health history: only what the sample data has =====
+           Hidden when the pet has no records; each list is hidden when empty. -->
+      <section id="healthSection" class="mt-5 d-none" aria-labelledby="healthHeading">
+        <h2 id="healthHeading" class="h3 mb-4">Health history</h2>
+        <div class="row g-4">
+          <div id="vaccinationBlock" class="col-lg-6">
+            <div class="form-card detail-card h-100">
+              <h3 class="h5 mb-3">
+                <i class="bi bi-shield-check" aria-hidden="true"></i> Vaccinations
+              </h3>
+              <ul id="vaccinationList" class="list-unstyled mb-0"></ul>
+            </div>
+          </div>
+          <div id="vetRecordBlock" class="col-lg-6">
+            <div class="form-card detail-card h-100">
+              <h3 class="h5 mb-3">
+                <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i> Vet visits
+              </h3>
+              <ul id="vetRecordList" class="list-unstyled mb-0"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Breed information: the spot for TheDogAPI / TheCatAPI =====
+           Milestone 3: the backend calls the API that matches the species,
+           and this card shows the breed's temperament, life span and origin. -->
+      <section class="mt-5" aria-labelledby="breedHeading">
+        <div class="form-card detail-card">
+          <h2 id="breedHeading" class="h4">About the <span class="detail-breed-name"></span> breed</h2>
+          <p class="mb-0 text-body-secondary">
+            <i class="bi bi-hourglass-split" aria-hidden="true"></i>
+            Coming soon: the breed's temperament, life span, origin and a photo,
+            from <span id="breedApiName"></span>.
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ===== Vet: "Add vet record" form in a Bootstrap modal =====
+       Bootstrap's JS opens it (data-bs-toggle on the button) and closes it
+       (data-bs-dismiss); js/pet-details.js saves it. The vet dashboard has
+       the same two vet forms (same ids), so the same code saves them there. -->
+  <div class="modal fade pet-modal" id="vetRecordModal" tabindex="-1"
+       aria-labelledby="vetRecordModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <form id="vetRecordForm" class="modal-content" novalidate>
+        <div class="modal-header">
+          <h2 id="vetRecordModalTitle" class="modal-title h5">
+            Add vet record for <span class="detail-pet-name"></span>
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- The pet the record is for (set by JS) -->
+          <input type="hidden" id="vetRecordPetId">
+          <div class="mb-3">
+            <label for="visitDate" class="form-label">Visit date</label>
+            <!-- max (today) is set by JS: a visit can't be in the future -->
+            <input type="date" class="form-control" id="visitDate" required>
+            <div class="invalid-feedback">Choose the visit date (not in the future).</div>
+          </div>
+          <div class="mb-3">
+            <label for="visitReason" class="form-label">Reason for the visit</label>
+            <input type="text" class="form-control" id="visitReason" maxlength="150" required>
+            <div class="invalid-feedback">Enter the reason for the visit.</div>
+          </div>
+          <div class="mb-3">
+            <label for="visitDiagnosis" class="form-label">
+              Diagnosis <span class="text-body-secondary">(optional)</span>
+            </label>
+            <input type="text" class="form-control" id="visitDiagnosis" maxlength="255">
+          </div>
+          <div class="mb-3">
+            <label for="visitTreatment" class="form-label">
+              Treatment <span class="text-body-secondary">(optional)</span>
+            </label>
+            <input type="text" class="form-control" id="visitTreatment" maxlength="255">
+          </div>
+          <div>
+            <label for="visitNotes" class="form-label">
+              Notes <span class="text-body-secondary">(optional)</span>
+            </label>
+            <textarea class="form-control" id="visitNotes" rows="3" maxlength="1000"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="outline-button" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="accent-button">Save record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Vet: "Add vaccination" form in a Bootstrap modal ===== -->
+  <div class="modal fade pet-modal" id="vaccinationModal" tabindex="-1"
+       aria-labelledby="vaccinationModalTitle" aria-hidden="true">
+    <div class="modal-dialog">
+      <form id="vaccinationForm" class="modal-content" novalidate>
+        <div class="modal-header">
+          <h2 id="vaccinationModalTitle" class="modal-title h5">
+            Add vaccination for <span class="detail-pet-name"></span>
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- The pet the vaccination is for (set by JS) -->
+          <input type="hidden" id="vaccinationPetId">
+          <div class="mb-3">
+            <label for="vaccineName" class="form-label">Vaccine</label>
+            <input type="text" class="form-control" id="vaccineName" maxlength="100"
+                   placeholder="e.g. Rabies" required>
+            <div class="invalid-feedback">Enter the name of the vaccine.</div>
+          </div>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label for="vaccineDateGiven" class="form-label">Date given</label>
+              <!-- max (today) is set by JS -->
+              <input type="date" class="form-control" id="vaccineDateGiven" required>
+              <div class="invalid-feedback">Choose the date (not in the future).</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="vaccineNextDue" class="form-label">
+                Next due <span class="text-body-secondary">(optional)</span>
+              </label>
+              <!-- JS checks that it's after the date given -->
+              <input type="date" class="form-control" id="vaccineNextDue">
+              <div class="invalid-feedback">Must be after the date given.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="outline-button" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="accent-button">Save vaccination</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Admin: "Edit pet details" form in a Bootstrap modal =====
+       JS copies the pet's current values into it when it opens. -->
+  <div class="modal fade pet-modal" id="editPetModal" tabindex="-1"
+       aria-labelledby="editPetModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <form id="editPetForm" class="modal-content" novalidate>
+        <div class="modal-header">
+          <h2 id="editPetModalTitle" class="modal-title h5">
+            Edit <span class="detail-pet-name"></span>
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="editPetName" class="form-label">Name</label>
+              <input type="text" class="form-control" id="editPetName" minlength="2" maxlength="50" required>
+              <div class="invalid-feedback">Enter a name (2–50 characters).</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="editPetSpecies" class="form-label">Animal type</label>
+              <select id="editPetSpecies" class="form-select" required>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="editPetBreed" class="form-label">Breed</label>
+              <input type="text" class="form-control" id="editPetBreed" maxlength="100" required>
+              <div class="invalid-feedback">Enter the breed.</div>
+            </div>
+            <div class="col-sm-6">
+              <label for="editPetSex" class="form-label">Sex</label>
+              <select id="editPetSex" class="form-select" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="editPetBirthDate" class="form-label">Birth date</label>
+              <!-- Required: the age and the Pets page's age filter are worked
+                   out from it. max (today) is set by JS. -->
+              <input type="date" class="form-control" id="editPetBirthDate" required>
+              <div class="invalid-feedback">Choose the birth date (not in the future).</div>
+            </div>
+            <div class="col-12">
+              <label for="editPetStatus" class="form-label">Adoption status</label>
+              <select id="editPetStatus" class="form-select" required>
+                <option value="available">Available</option>
+                <option value="pending">Pending</option>
+                <option value="adopted">Adopted</option>
+              </select>
+              <!-- Shown by JS when the chosen status doesn't fit the pet's
+                   applications (manage-applications.js). Saving is still allowed. -->
+              <div id="editPetStatusWarning" class="alert alert-warning small mt-2 mb-0 d-none" aria-live="polite"></div>
+            </div>
+            <div class="col-12">
+              <label for="editPetDescription" class="form-label">
+                Description <span class="text-body-secondary">(optional)</span>
+              </label>
+              <textarea class="form-control" id="editPetDescription" rows="3" maxlength="500"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="outline-button" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="accent-button">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- One vaccination. A <template> is never shown: JS copies it and fills
+       it in. Lines without data (e.g. no next due date) are removed. -->
+  <template id="vaccinationTemplate">
+    <li class="health-item">
+      <p class="fw-bold mb-1 vaccination-name"></p>
+      <ul class="list-unstyled mb-0">
+        <li><strong>Given:</strong> <span class="vaccination-date"></span></li>
+        <li><strong>Next due:</strong> <span class="vaccination-due"></span></li>
+        <li><strong>Vet:</strong> <span class="vaccination-vet"></span></li>
+      </ul>
+    </li>
+  </template>
+
+  <!-- One vet visit. Diagnosis, treatment and notes are optional. -->
+  <template id="vetRecordTemplate">
+    <li class="health-item">
+      <p class="fw-bold mb-1">
+        <span class="record-date"></span> &middot; <span class="record-reason"></span>
+      </p>
+      <ul class="list-unstyled mb-0">
+        <li><strong>Diagnosis:</strong> <span class="record-diagnosis"></span></li>
+        <li><strong>Treatment:</strong> <span class="record-treatment"></span></li>
+        <li><strong>Notes:</strong> <span class="record-notes"></span></li>
+        <li><strong>Vet:</strong> <span class="record-vet"></span></li>
+      </ul>
+    </li>
+  </template>
+</section>

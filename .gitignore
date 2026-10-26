@@ -1,0 +1,18 @@
+# Secrets: the real config holds DB credentials, the JWT secret and API keys.
+# Only backend/config/config.example.php (placeholder values) is committed.
+backend/config/config.php
+
+# Logs: keep the folder in Git (via .gitkeep), ignore every log file written into it.
+backend/logs/*
+!backend/logs/.gitkeep
+
+# Composer dependencies, reinstalled with `composer install`.
+backend/vendor/
+
+# Personal Claude Code settings (shared agents and skills in .claude/ are committed)
+.claude/settings.local.json
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
