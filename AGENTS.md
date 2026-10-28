@@ -14,7 +14,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/ (images, icons)
-- backend/: routes/, services/, dao/, middleware/, config/, logs/
+- backend/: routes/, services/, dao/, middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data)
 - docs/: AI_LOG.md and other documentation
 
 ## Frontend rules

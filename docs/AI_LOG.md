@@ -167,3 +167,22 @@
   What was wrong: Claude Code gave Profile its own copy of one account, so every role saw Lejla, and renaming her in Manage users didn't change her profile.
   How I noticed: during my manual testing.
   How it was fixed: I reported it, and Claude Code made Profile read the current role's account from the shared list of users.
+
+## Milestone 2
+
+### Tools and tasks
+- Claude Code (VS Code extension, agent mode, model Claude Opus 5.5): wrote the database schema, backend/database/pawfriends.sql.
+  Prompt: "here is the document you've asked for. keep the 6 tables for now. and add .sql to the file path you suggested." (with the course reading on the DAO layer)
+  It created the database paw_friends with the 6 tables from the ERD, their primary and foreign keys, and column lengths taken from the forms' maxlength. The foreign keys use ON DELETE RESTRICT, so a row that other rows point to can't be deleted, the same rule the admin pages show. It tested the file in a temporary database.
+  I kept it as generated, and decided not to add users.created_at, because it isn't in the ERD. Later I made the application message optional, because the sample data has an application without one.
+
+### Where the AI was wrong
+- The draft ERD showed five optional fields as required (ERD, found while writing the database schema).
+  What was wrong: in the Milestone 1 ERD, written with Claude Code, shelters.description, shelters.latitude, shelters.longitude, pets.description and vet_records.diagnosis had no "optional" mark, although their form fields are not required (the shelter form even labels latitude and longitude "(optional)"). As NOT NULL columns, they would have made those forms fail to save once they are connected to the backend.
+  How it was noticed: Claude Code noticed it while writing the database schema, by comparing every column with the forms' required and maxlength attributes.
+  How it was fixed: Claude Code made the five columns optional in pawfriends.sql, and at my request ("This needs to be fixed") also marked them as optional in the ERD.
+
+- The schema made the application message required, although the sample data has an application without one (database schema).
+  What was wrong: Claude Code made adoption_applications.message required (NOT NULL), as in the ERD, after comparing the columns with the forms. But there is no apply form yet, and the Milestone 1 sample data has an application without a message, which the admin's review page shows as "No message." I had already imported the schema in phpMyAdmin.
+  How it was noticed: Claude Code noticed it in the next step, while turning the sample data into INSERT statements, because that application would have failed to import.
+  How it was fixed: I chose to make the message optional, and Claude Code changed it in pawfriends.sql and the ERD.

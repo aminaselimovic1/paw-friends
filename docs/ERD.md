@@ -31,10 +31,10 @@ erDiagram
         varchar city
         varchar phone
         varchar email
-        text description
+        text description "optional"
         text opening_hours "optional"
-        decimal latitude "for the map"
-        decimal longitude "for the map"
+        decimal latitude "optional, for the map"
+        decimal longitude "optional, for the map"
     }
     pets {
         int id PK
@@ -42,10 +42,10 @@ erDiagram
         varchar name
         enum species "dog, cat"
         varchar breed_name
-        varchar breed_api_id "breed id in TheDogAPI / TheCatAPI"
+        varchar breed_api_id "optional, breed id in TheDogAPI / TheCatAPI"
         enum sex "male, female"
         date birth_date
-        text description
+        text description "optional"
         varchar photo_url "optional"
         enum status "available, pending, adopted"
     }
@@ -53,7 +53,7 @@ erDiagram
         int id PK
         int pet_id FK
         int user_id FK
-        text message
+        text message "optional"
         enum status "pending, approved, rejected"
         int reviewed_by FK "admin, empty while pending"
         datetime created_at
@@ -64,7 +64,7 @@ erDiagram
         int vet_id FK
         date visit_date
         varchar reason
-        text diagnosis
+        text diagnosis "optional"
         text treatment "optional"
         text notes "optional"
     }
@@ -107,7 +107,7 @@ erDiagram
 
 - **The role is a column in `users`**, not a separate table. There are exactly three fixed roles, so an ENUM is simpler, and the role goes straight into the JWT token.
 - **Vets and admins are users.** `vet_id` and `reviewed_by` point to `users.id`, so everyone logs in the same way and there are no separate vets or admins tables.
-- **There is no `breeds` table.** Breed details (temperament, life span, origin, photo) come from TheDogAPI or TheCatAPI. A pet stores only `breed_name` (for display and search) and `breed_api_id` (to fetch the details). `breed_api_id` is text because TheCatAPI's breed ids are short codes such as `abys`, while TheDogAPI uses numbers.
+- **There is no `breeds` table.** Breed details (temperament, life span, origin, photo) come from TheDogAPI or TheCatAPI. A pet stores only `breed_name` (for display and search) and `breed_api_id` (to fetch the details). `breed_api_id` is text because TheCatAPI's breed ids are short codes such as `abys`, while TheDogAPI uses numbers. It's optional because a mixed-breed pet has no breed in the API.
 - **`species` is only dog or cat**, because it decides which of the two APIs is called.
 - **`reviewed_by` is empty while an application is pending.** It's filled in when an admin approves or rejects the application.
 - **Vet records and vaccinations are separate tables** because they have different fields. A vaccination has a `next_due_date`, which the vet dashboard uses for follow-ups. A vet visit has a reason, diagnosis and treatment.
