@@ -28,6 +28,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 - Requests go: route -> middleware -> service -> DAO -> database.
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL is in DAO classes and uses PDO prepared statements. Every DAO extends BaseDao.
+- The PDO connection is opened only in Database::getConnection().
 - Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 500).
 - Middleware is registered in Flight and reused, never copied into individual routes.
 - External API calls happen in a service, with a timeout; failures are written to the error log and return a user-friendly message.
