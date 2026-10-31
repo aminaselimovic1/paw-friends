@@ -14,7 +14,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/ (images, icons)
-- backend/: routes/, services/, dao/, middleware/, config/, logs/
+- backend/: routes/, services/, dao/ (Database.php, BaseDao.php and one DAO per table), middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data), test-dao.php (a manual test of the DAOs, run from the terminal; delete it before deploying in Milestone 5)
 - docs/: AI_LOG.md and other documentation
 
 ## Frontend rules
@@ -28,6 +28,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 - Requests go: route -> middleware -> service -> DAO -> database.
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL is in DAO classes and uses PDO prepared statements. Every DAO extends BaseDao.
+- The PDO connection is opened only in Database::getConnection().
 - Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 500).
 - Middleware is registered in Flight and reused, never copied into individual routes.
 - External API calls happen in a service, with a timeout; failures are written to the error log and return a user-friendly message.
