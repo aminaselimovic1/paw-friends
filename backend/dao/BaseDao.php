@@ -25,7 +25,7 @@ class BaseDao
             "SELECT * FROM {$this->table} WHERE id = :id"
         );
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch() ?: null;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     // insert() and update() take the column names from the keys of $data, so
@@ -44,6 +44,7 @@ class BaseDao
 
     public function update(int $id, array $data): bool
     {
+        unset($data['id']);
         $fields = [];
         foreach (array_keys($data) as $column) {
             $fields[] = "$column = :$column";

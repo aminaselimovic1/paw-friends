@@ -25,11 +25,13 @@ Guests (not logged in) can browse pets and shelters, and can log in or register.
 | `pets` | dogs and cats; each pet belongs to one shelter |
 | `adoption_applications` | a user's application to adopt a pet, reviewed by an admin |
 | `vet_records` | a vet's visit notes for a pet (reason, diagnosis, treatment) |
-| `vaccinations` | vaccines given to a pet, with the next due date |
+| `vaccinations` | vaccines given to a pet by a vet, with the next due date |
+
+See [docs/ERD.md](docs/ERD.md) for the relationships between these tables.
 
 ## External API
 
-The pet details page will show breed information (temperament, life span, origin, photo) from [TheDogAPI](https://thedogapi.com) for dogs or [TheCatAPI](https://thecatapi.com) for cats. In Milestone 1 the page has a placeholder for it.
+The pet details page will show breed information (temperament, life span, origin, photo) from [TheDogAPI](https://thedogapi.com) for dogs or [TheCatAPI](https://thecatapi.com) for cats. The current frontend still has a placeholder for this feature; the external API is not integrated yet.
 
 ## Technology stack
 
@@ -66,29 +68,49 @@ paw-friends/
 
 ## Running the project with XAMPP
 
-**Requirements:** XAMPP (Apache and MySQL) and an internet connection (Bootstrap, jQuery and Leaflet load from a CDN, and the map loads from OpenStreetMap).
+**Requirements:** XAMPP with Apache, MySQL and PHP **8.0 or newer** (the current development setup uses PHP 8.2), Git, and an internet connection (Bootstrap, jQuery and Leaflet load from a CDN, and the map loads from OpenStreetMap).
 
-1. Clone the repository into XAMPP's `htdocs` folder:
-   - macOS: `/Applications/XAMPP/xamppfiles/htdocs`
-   - Windows: `C:\xampp\htdocs`
+1. **Clone the repository** into XAMPP's `htdocs` folder. Open a terminal and use the commands for your operating system:
+
+   **macOS (Terminal):**
 
    ```bash
+   cd /Applications/XAMPP/xamppfiles/htdocs
    git clone https://github.com/aminaselimovic1/paw-friends.git
+   cd paw-friends
    ```
+
+   **Windows (Command Prompt):**
+
+   ```bat
+   cd /d C:\xampp\htdocs
+   git clone https://github.com/aminaselimovic1/paw-friends.git
+   cd paw-friends
+   ```
+
 2. Start **Apache** and **MySQL** in the XAMPP Control Panel.
 3. **Import the database:** open phpMyAdmin (<http://localhost/phpmyadmin>), go to the **Import** tab, choose `backend/database/pawfriends.sql` and click **Import**. The file creates the `paw_friends` database with its 6 tables and the sample data. Importing it again resets the data.
-4. **Create the configuration file:** copy `backend/config/config.example.php` to `backend/config/config.php`:
+4. **Create the configuration file:** from the `paw-friends` project folder (entered in step 1), copy `backend/config/config.example.php` to `backend/config/config.php`:
+
+   **macOS (Terminal):**
 
    ```bash
    cp backend/config/config.example.php backend/config/config.php
    ```
+
+   **Windows (Command Prompt):**
+
+   ```bat
+   copy backend\config\config.example.php backend\config\config.php
+   ```
+
    The values are XAMPP's defaults (user `root`, no password). Change them in `config.php` if your MySQL is set up differently. `config.php` is never committed, because it holds the real credentials.
 5. **Optional: check the database connection.** Run the DAO test script from the project folder: `/Applications/XAMPP/bin/php backend/test-dao.php` (on Windows: `C:\xampp\php\php.exe backend\test-dao.php`). It prints shelters, pets and a user from the database, then adds, changes and deletes a test shelter.
 6. Open the frontend in a browser: <http://localhost/paw-friends/frontend/>
 
 The app must be opened through Apache (`http://localhost/...`), not by double-clicking `index.html`. The router loads each view with an AJAX request, and browsers block those requests for files opened from disk.
 
-## Trying the Milestone 1 demo
+## Trying the frontend demo
 
 The frontend isn't connected to the backend yet (that comes in Milestone 4), so the demo works like this:
 

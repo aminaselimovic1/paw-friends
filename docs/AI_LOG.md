@@ -176,6 +176,11 @@
   It created the database paw_friends with the 6 tables from the ERD, their primary and foreign keys, and column lengths taken from the forms' maxlength. The foreign keys use ON DELETE RESTRICT, so a row that other rows point to can't be deleted, the same rule the admin pages show. It tested the file in a temporary database.
   I kept it as generated, and decided not to add users.created_at, because it isn't in the ERD. Later I made the application message optional, because the sample data has an application without one.
 
+- Claude Code (same setup, reviewer agent): reviewed all of Milestone 2 before the pull request.
+  Prompt: "@agents-reviewer Check everything for Milestone 2 and see if there are any issues."
+  It confirmed that every Milestone 2 requirement is met and found no serious problems, but reported one bug in BaseDao and six smaller issues.
+  I fixed five of them myself: the BaseDao bug (see "Where the AI was wrong"), outdated Milestone 1 wording and missing steps in the README's run instructions, a link from the README's entities to the ERD, and a check that stops test-dao.php from running in a browser. I left the other two as they were.
+
 ### Where the AI was wrong
 - The draft ERD showed five optional fields as required (ERD, found while writing the database schema).
   What was wrong: in the Milestone 1 ERD, written with Claude Code, shelters.description, shelters.latitude, shelters.longitude, pets.description and vet_records.diagnosis had no "optional" mark, although their form fields are not required (the shelter form even labels latitude and longitude "(optional)"). As NOT NULL columns, they would have made those forms fail to save once they are connected to the backend.
@@ -186,3 +191,8 @@
   What was wrong: Claude Code made adoption_applications.message required (NOT NULL), as in the ERD, after comparing the columns with the forms. But there is no apply form yet, and the Milestone 1 sample data has an application without a message, which the admin's review page shows as "No message." I had already imported the schema in phpMyAdmin.
   How it was noticed: Claude Code noticed it in the next step, while turning the sample data into INSERT statements, because that application would have failed to import.
   How it was fixed: I chose to make the message optional, and Claude Code changed it in pawfriends.sql and the ERD.
+
+- BaseDao's update() failed when the data contained an id (DAO layer).
+  What was wrong: Claude Code took update() from the course reading. When the data included an id, for example a whole row loaded with getById(), the query used the :id placeholder twice, which real prepared statements don't allow, so update() threw a PDOException (HY093). Claude Code's own tests never passed an id, so they didn't catch it.
+  How it was noticed: the reviewer agent found it when I asked it to check all of Milestone 2, and Claude Code reproduced the error.
+  How I fixed it: I added unset($data['id']) at the start of update(), so the id is only used in the WHERE part. Claude Code then tested that a whole row can be updated.
