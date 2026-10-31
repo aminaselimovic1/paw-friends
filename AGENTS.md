@@ -14,7 +14,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/ (images, icons)
-- backend/: routes/, services/, dao/, middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data)
+- backend/: routes/, services/, dao/ (Database.php, BaseDao.php and one DAO per table), middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data), test-dao.php (a manual test of the DAOs, run from the terminal; delete it before deploying in Milestone 5)
 - docs/: AI_LOG.md and other documentation
 
 ## Frontend rules

@@ -1,6 +1,6 @@
-# PawFriends: Entity-Relationship Diagram (draft)
+# PawFriends: Entity-Relationship Diagram
 
-Draft for Milestone 1. The database is created in Milestone 2, so column names and types may still change.
+The database as it was built in Milestone 2. The exact type and length of every column are in [backend/database/pawfriends.sql](../backend/database/pawfriends.sql). Columns marked "optional" may be empty (NULL); all other columns are required.
 
 PawFriends has 6 entities: `users`, `shelters`, `pets`, `adoption_applications`, `vet_records` and `vaccinations`.
 
@@ -64,8 +64,8 @@ erDiagram
         int vet_id FK
         date visit_date
         varchar reason
-        text diagnosis "optional"
-        text treatment "optional"
+        varchar diagnosis "optional"
+        varchar treatment "optional"
         text notes "optional"
     }
     vaccinations {
@@ -100,6 +100,8 @@ erDiagram
 | A vet writes many vet records | one-to-many | `vet_records.vet_id` → `users.id` |
 | A pet has many vaccinations | one-to-many | `vaccinations.pet_id` → `pets.id` |
 | A vet gives many vaccinations | one-to-many | `vaccinations.vet_id` → `users.id` |
+
+**All foreign keys use `ON DELETE RESTRICT`:** a row can't be deleted while other rows point to it. For example, a shelter that still has pets, or a pet with applications or health records, can't be deleted.
 
 **Users and pets are many-to-many:** a user can apply for many pets, and a pet can get applications from many users. `adoption_applications` is the table between them, and it also stores the application's own data (message, status, reviewer, date).
 
