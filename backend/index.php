@@ -11,12 +11,14 @@ require_once __DIR__ . '/services/UserService.php';
 require_once __DIR__ . '/services/AdoptionApplicationService.php';
 require_once __DIR__ . '/services/VetRecordService.php';
 require_once __DIR__ . '/services/VaccinationService.php';
+require_once __DIR__ . '/services/BreedService.php';
 Flight::register('shelterService', 'ShelterService');
 Flight::register('petService', 'PetService');
 Flight::register('userService', 'UserService');
 Flight::register('adoptionApplicationService', 'AdoptionApplicationService');
 Flight::register('vetRecordService', 'VetRecordService');
 Flight::register('vaccinationService', 'VaccinationService');
+Flight::register('breedService', 'BreedService');
 
 // Errors are handled in one place (Reading 05). Every exception thrown in a
 // route or a service ends up here and becomes a JSON answer.
@@ -31,6 +33,12 @@ Flight::map('error', function (Throwable $e) {
     // a broken business rule, e.g. the email is already taken
     if ($e instanceof DomainException) {
         Flight::jsonHalt(['error' => $e->getMessage()], 409);
+        return;
+    }
+    // the external API (breed info) failed: BreedService already wrote the
+    // details to the error log, and the message is a friendly one
+    if ($e instanceof ExternalApiException) {
+        Flight::jsonHalt(['error' => $e->getMessage()], 503);
         return;
     }
     // anything else: the details go to the server log, never to the client

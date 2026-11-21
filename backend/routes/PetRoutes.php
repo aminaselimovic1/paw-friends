@@ -18,6 +18,17 @@ Flight::route('GET /pets/@id:[0-9]+', function ($id) {
     Flight::json($pet);
 });
 
+// GET /pets/1/breed-info       breed info from TheDogAPI / TheCatAPI (the external API)
+// 200 with "breed": null when the pet has no breed info; 503 if the API fails
+Flight::route('GET /pets/@id:[0-9]+/breed-info', function ($id) {
+    $info = Flight::breedService()->getForPet((int) $id);
+    if ($info === null) {
+        Flight::json(['error' => 'Pet not found'], 404);
+        return;
+    }
+    Flight::json($info);
+});
+
 // POST /pets                   create; JSON in the body
 Flight::route('POST /pets', function () {
     $data = Flight::request()->data->getData();
