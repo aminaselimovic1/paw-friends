@@ -196,3 +196,22 @@
   What was wrong: Claude Code took update() from the course reading. When the data included an id, for example a whole row loaded with getById(), the query used the :id placeholder twice, which real prepared statements don't allow, so update() threw a PDOException (HY093). Claude Code's own tests never passed an id, so they didn't catch it.
   How it was noticed: the reviewer agent found it when I asked it to check all of Milestone 2, and Claude Code reproduced the error.
   How I fixed it: I added unset($data['id']) at the start of update(), so the id is only used in the WHERE part. Claude Code then tested that a whole row can be updated.
+
+## Milestone 3
+
+### Tools and tasks
+- Claude Code (VS Code extension, agent mode, model Claude Opus 5.5): set up the backend skeleton, following Readings 05 and 06.
+  Prompt: "Build the backend skeleton next: composer.json with Flight and swagger-php, .htaccess, and an index.php with the error handlers and one test route. Then check in the browser that Flight answers with JSON."
+  It created backend/composer.json (FlightPHP and swagger-php, installed with Composer), the .htaccess that sends every request to index.php, and index.php with one error handler (400 for invalid input, 409 for a broken business rule, 500 with a general message), JSON answers for 404 and 405, and a test route GET /. It installed the libraries with XAMPP's PHP 8.2, because the default PHP on my computer is 8.5 and could have picked versions that don't run under XAMPP. It tested the routes through Apache and the error handler with test routes that throw on purpose.
+  I kept it as generated.
+
+### Where the AI was wrong
+- The error handler answered 200 with an empty body (backend skeleton).
+  What was wrong: Claude Code wrote the error handler as in Reading 05, with Flight::json(). In FlightPHP 3.19, json() only prepares the answer, and after an exception nothing sends it, so a request with invalid data got 200 and an empty body instead of 400 and the error message.
+  How it was noticed: Claude Code suspected it after reading Flight's source code and confirmed it with test routes that throw exceptions on purpose.
+  How it was fixed: Claude Code changed the handler to Flight::jsonHalt(), which sends the answer immediately, and tested again: 400, 409 and 500 now come back with the right JSON.
+
+- "Show password" made a valid password block the form (frontend validation).
+  What was wrong: the check that ignores spaces at the start and end of text fields, written with Claude Code in Milestone 1, chose the fields by type="text". "Show password" changes a password field to type="text", so a shown password like " 1234567 " counted as 7 characters and was "too short", and the error stayed after hiding it again, so a valid password blocked the form.
+  How it was noticed: Claude Code noticed it in Milestone 3 while adding a password field to the admin's user form, and I asked it to fix it.
+  How it was fixed: password fields are now recognised by their autocomplete attribute, which doesn't change; Claude Code tested the old and the new version in a browser.

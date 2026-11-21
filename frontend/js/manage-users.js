@@ -124,6 +124,9 @@ function openUserForm(user) {
   $("#userName").val(isNew ? "" : user.name);
   $("#userEmail").val(isNew ? "" : user.email);
   $("#userRole").val(isNew ? "user" : user.role);
+  // The password field only for a new user; disabled = not validated, not sent
+  $("#userPasswordGroup").toggleClass("d-none", !isNew);
+  $("#userPassword").prop("disabled", !isNew);
   // You can't change your own role (otherwise the last admin could lock themselves out)
   $("#userRole").prop("disabled", isYou);
   $("#userRoleNote").toggleClass("d-none", !isYou);
@@ -175,7 +178,10 @@ $(document).on("submit", "#userForm", function (e) {
   const email = $("#userEmail").val().trim();
   const role = $("#userRole").val();
 
-  // Demo (M1): saved in sampleUsers. In M4: POST /users or PUT /users/{id}.
+  // Demo (M1): saved in sampleUsers. In M4: POST /users (with the password,
+  // which the backend stores only as a hash) or PUT /users/{id}.
+  // The demo checks the password but doesn't keep it: a password never goes
+  // into the browser's data.
   if (id === "") {
     sampleUsers.push({ id: getNextId(sampleUsers), name: name, email: email, role: role });
     showUserSaved(name + " was added.");

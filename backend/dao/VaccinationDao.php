@@ -17,4 +17,14 @@ class VaccinationDao extends BaseDao
         $stmt->execute(['pet_id' => $petId]);
         return $stmt->fetchAll();
     }
+
+    // The vaccinations one vet gave, newest first (deleting a user checks them)
+    public function getByVetId(int $vetId): array
+    {
+        $stmt = $this->connection->prepare(
+            'SELECT * FROM vaccinations WHERE vet_id = :vet_id ORDER BY date_given DESC'
+        );
+        $stmt->execute(['vet_id' => $vetId]);
+        return $stmt->fetchAll();
+    }
 }
