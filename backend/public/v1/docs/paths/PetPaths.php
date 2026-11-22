@@ -69,7 +69,7 @@ class PetPaths
     #[OA\Put(
         path: '/pets/{id}',
         tags: ['pets'],
-        summary: 'Update a pet (validated like create; photo_url and breed_api_id are kept if not sent)',
+        summary: 'Update a pet (validated like create; photo_url and breed_api_id are kept if not sent, but a new species drops the old breed_api_id)',
         parameters: [new OA\Parameter(ref: '#/components/parameters/id')],
         requestBody: new OA\RequestBody(required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/PetInput')),

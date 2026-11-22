@@ -58,6 +58,11 @@ class AdoptionApplicationService extends BaseService
         if ($user === null) {
             throw new InvalidArgumentException("User $userId doesn't exist.");
         }
+        // Rule: only users apply to adopt (AGENTS.md: "user: applies to adopt").
+        // Otherwise an admin could apply and then approve their own application.
+        if ($user['role'] !== 'user') {
+            throw new DomainException("Only users can apply to adopt. {$user['name']}'s role is {$user['role']}.");
+        }
 
         // Rule: you can't apply for an adopted pet
         if ($pet['status'] === 'adopted') {

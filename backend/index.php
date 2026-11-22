@@ -1,4 +1,9 @@
 <?php
+
+// Prevent PHP errors from exposing server paths or sensitive details.
+// This must run before any require or require_once statements.
+ini_set('display_errors', '0');
+
 // The front controller: .htaccess sends every request here, and FlightPHP
 // finds the route that matches the method and the URL.
 require __DIR__ . '/vendor/autoload.php';

@@ -145,7 +145,7 @@ The app must be opened through Apache (`http://localhost/...`), not by double-cl
 | Vet records | `GET`/`POST /vet-records`, `GET`/`PUT`/`DELETE /vet-records/{id}`, `GET /pets/{id}/vet-records` |
 | Vaccinations | `GET`/`POST /vaccinations`, `GET`/`PUT`/`DELETE /vaccinations/{id}`, `GET /pets/{id}/vaccinations` |
 
-**Answers:** `200` OK, `201` created, `400` invalid input, `404` not found, `409` the request breaks a business rule (for example: the email is already used, the pet is already adopted, a shelter that still has pets can't be deleted), `503` the breed API is unavailable, `500` an unexpected server error. Errors always come as `{"error": "..."}`, without technical details.
+**Answers:** `200` OK, `201` created, `400` invalid input, `404` not found, `405` the URL exists but not with this method (e.g. `PATCH`), `409` the request breaks a business rule (for example: the email is already used, the pet is already adopted, a shelter that still has pets can't be deleted), `503` the breed API is unavailable, `500` an unexpected server error. Errors always come as `{"error": "..."}`, without technical details.
 
 In Milestone 3 every endpoint is open. Login with JWT, and the role checks (`401`/`403`) that decide who may call what, come in Milestone 4.
 

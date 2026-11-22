@@ -7,9 +7,9 @@
 // (my-applications.js), sampleVetRecords and sampleVaccinations
 // (pet-details.js), capitalizeFirstLetter (pets.js) and resetForm (auth.js).
 
-// Same columns as the planned users table, without password_hash: a password
-// (even a hashed one) is never sent to the browser. phone and city are shown
-// on Profile; they aren't in the planned table yet (a schema decision for M2).
+// Same columns as the users table, without password_hash: a password
+// (even a hashed one) is never sent to the browser. phone and city are
+// optional columns of users (since M2); the Profile page shows them.
 // The emails match the demo login: admin@example.com = admin, emina.vet@... = vet.
 // The vets' ids match vet_id on the health records.
 const sampleUsers = [

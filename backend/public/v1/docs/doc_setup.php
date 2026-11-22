@@ -16,6 +16,7 @@ use OpenApi\Attributes as OA;
     version: '1.0',
     description: 'REST API of PawFriends: pet adoption and veterinary records (IT 2001 Web Programming).'
         . "\n\nErrors always come as JSON `{\"error\": \"...\"}`: **400** invalid input, **404** not found, "
+        . '**405** the URL exists but not with this method, '
         . '**409** the request breaks a business rule (e.g. the email is taken, the pet is adopted), '
         . '**503** the external breed API is unavailable, **500** an unexpected server error '
         . '(the details are only in the server log).'
@@ -29,6 +30,7 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'adoption-applications', description: "A user's application to adopt a pet, and the admin's review")]
 #[OA\Tag(name: 'vet-records', description: "A vet's visit notes for a pet")]
 #[OA\Tag(name: 'vaccinations', description: 'Vaccines given to a pet by a vet')]
+#[OA\Tag(name: 'status', description: 'Check that the API is running')]
 
 // ---------- Answers that every resource uses ----------
 #[OA\Schema(
@@ -89,7 +91,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'species', type: 'string', enum: ['dog', 'cat'], example: 'dog'),
         new OA\Property(property: 'breed_name', type: 'string', maxLength: 100, example: 'Labrador Retriever'),
         new OA\Property(property: 'breed_api_id', type: 'string', maxLength: 20, nullable: true, example: '149',
-            description: "The breed's id in TheDogAPI (a number) or TheCatAPI (4 letters). On update: kept if not sent."),
+            description: "The breed's id in TheDogAPI (a number) or TheCatAPI (4 letters). On update: kept if not sent, unless the species changes (then it becomes null)."),
         new OA\Property(property: 'sex', type: 'string', enum: ['male', 'female'], example: 'male'),
         new OA\Property(property: 'birth_date', type: 'string', format: 'date', example: '2023-06-12',
             description: "YYYY-MM-DD, not in the future"),
@@ -141,8 +143,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'name', type: 'string', minLength: 2, maxLength: 100, example: 'Amra Hasić'),
         new OA\Property(property: 'email', type: 'string', format: 'email', maxLength: 255, example: 'amra@example.com',
             description: 'Must not be used by another account (any upper/lower case)'),
-        new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, example: 'demo1234',
-            description: 'At least 8 characters, not only spaces. Stored only as a hash; never returned.'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, maxLength: 72, example: 'demo1234',
+            description: 'At least 8 characters, not only spaces, at most 72 bytes (a letter like č counts as 2). Stored only as a hash; never returned.'),
         new OA\Property(property: 'role', type: 'string', enum: ['user', 'vet', 'admin'], example: 'user',
             description: "Optional, 'user' if not sent"),
         new OA\Property(property: 'phone', type: 'string', maxLength: 50, nullable: true, example: '+387 61 123 456'),
@@ -181,7 +183,7 @@ use OpenApi\Attributes as OA;
     required: ['pet_id', 'user_id'],
     properties: [
         new OA\Property(property: 'pet_id', type: 'integer', example: 4, description: 'An existing pet that is not adopted'),
-        new OA\Property(property: 'user_id', type: 'integer', example: 7, description: 'An existing user (from the login token in M4)'),
+        new OA\Property(property: 'user_id', type: 'integer', example: 7, description: "An existing account with the role 'user' (from the login token in M4)"),
         new OA\Property(property: 'message', type: 'string', maxLength: 1000, nullable: true,
             example: 'We have a garden and lots of time for walks.'),
     ]
@@ -218,7 +220,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'pet_id', type: 'integer', example: 1, description: 'Must be an existing pet'),
         new OA\Property(property: 'vet_id', type: 'integer', example: 2, description: 'Must be a vet (from the login token in M4)'),
         new OA\Property(property: 'visit_date', type: 'string', format: 'date', example: '2026-08-14',
-            description: 'YYYY-MM-DD, not in the future'),
+            description: "YYYY-MM-DD, not in the future and not before the pet's birth date"),
         new OA\Property(property: 'reason', type: 'string', maxLength: 150, example: 'Yearly check-up'),
         new OA\Property(property: 'diagnosis', type: 'string', maxLength: 255, nullable: true, example: 'Healthy, normal weight'),
         new OA\Property(property: 'treatment', type: 'string', maxLength: 255, nullable: true, example: 'Deworming tablet'),
@@ -242,7 +244,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'vet_id', type: 'integer', example: 2, description: 'Must be a vet (from the login token in M4)'),
         new OA\Property(property: 'vaccine_name', type: 'string', maxLength: 100, example: 'Rabies'),
         new OA\Property(property: 'date_given', type: 'string', format: 'date', example: '2026-08-14',
-            description: 'YYYY-MM-DD, not in the future'),
+            description: "YYYY-MM-DD, not in the future and not before the pet's birth date"),
         new OA\Property(property: 'next_due_date', type: 'string', format: 'date', nullable: true, example: '2027-08-14',
             description: 'Optional; must be after date_given (it may be in the past: overdue)'),
     ]

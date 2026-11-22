@@ -50,6 +50,12 @@ class PetService extends BaseService
                 $pet[$field] = $current[$field];
             }
         }
+        // A breed id belongs to one API: TheDogAPI or TheCatAPI. If the species
+        // changes and no new breed_api_id is sent, the old one would be looked
+        // up in the wrong API, so it's dropped.
+        if ($pet['species'] !== $current['species'] && !array_key_exists('breed_api_id', $data)) {
+            $pet['breed_api_id'] = null;
+        }
         $this->dao->update($id, $pet);
         return $this->dao->getById($id);
     }

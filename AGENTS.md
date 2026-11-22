@@ -34,7 +34,7 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL is in DAO classes and uses PDO prepared statements. Every DAO extends BaseDao.
 - The PDO connection is opened only in Database::getConnection().
-- Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 409, 500, 503).
+- Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 405, 409, 500, 503).
 - A route only reads the input, calls one service method and answers with Flight::json(). Business rules belong in services.
 - Services validate every input and pass only allowed fields to the DAO (an allow-list). The API never returns password_hash.
 - Services report problems with exceptions, and Flight::map('error') in index.php turns them into answers: InvalidArgumentException -> 400, DomainException (a broken business rule) -> 409, ExternalApiException -> 503, anything else -> 500 with a general message (the details go to the error log).

@@ -124,6 +124,12 @@ class UserService extends BaseService
         if (mb_strlen($password) < 8) {
             throw new InvalidArgumentException("Field 'password' must have at least 8 characters.");
         }
+        // bcrypt (password_hash) uses only the first 72 bytes and silently
+        // ignores the rest, so a longer password is refused. strlen() counts
+        // bytes: a letter like č is 2 bytes.
+        if (strlen($password) > 72) {
+            throw new InvalidArgumentException("Field 'password' is too long (max 72 bytes; a letter like č counts as 2).");
+        }
         return $password;
     }
 

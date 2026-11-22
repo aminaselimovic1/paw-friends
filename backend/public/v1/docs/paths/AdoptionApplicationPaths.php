@@ -73,7 +73,7 @@ class AdoptionApplicationPaths
                 content: new OA\JsonContent(ref: '#/components/schemas/AdoptionApplication')),
             new OA\Response(response: 400, description: 'Invalid data, e.g. a pet or user that does not exist',
                 content: new OA\JsonContent(ref: '#/components/schemas/Error')),
-            new OA\Response(response: 409, description: 'The pet is adopted, or the user already has a pending application for it',
+            new OA\Response(response: 409, description: "The account's role isn't 'user' (admins and vets can't apply), the pet is adopted, or the user already has a pending application for it",
                 content: new OA\JsonContent(ref: '#/components/schemas/Error')),
         ]
     )]

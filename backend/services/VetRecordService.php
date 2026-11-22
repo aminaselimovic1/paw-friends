@@ -51,7 +51,8 @@ class VetRecordService extends BaseService
     {
         // Rule: the pet must exist (an unknown pet is invalid input, 400)
         $petId = $this->requiredId($data, 'pet_id');
-        if ($this->petDao->getById($petId) === null) {
+        $pet = $this->petDao->getById($petId);
+        if ($pet === null) {
             throw new InvalidArgumentException("Pet $petId doesn't exist.");
         }
 
@@ -66,11 +67,17 @@ class VetRecordService extends BaseService
             throw new DomainException("Only a vet can write health records. {$vet['name']} isn't a vet.");
         }
 
+        // Rule: the date can't be in the future (the form's max = today),
+        // and not before the pet was born
+        $visitDate = $this->requiredPastDate($data, 'visit_date');
+        if ($visitDate < $pet['birth_date']) {
+            throw new InvalidArgumentException("Field 'visit_date' can't be before the pet's birth date ({$pet['birth_date']}).");
+        }
+
         return [
             'pet_id' => $petId,
             'vet_id' => $vetId,
-            // Rule: the date can't be in the future (the form's max = today)
-            'visit_date' => $this->requiredPastDate($data, 'visit_date'),
+            'visit_date' => $visitDate,
             'reason' => $this->requiredText($data, 'reason', 150),
             'diagnosis' => $this->optionalText($data, 'diagnosis', 255),
             'treatment' => $this->optionalText($data, 'treatment', 255),

@@ -205,6 +205,26 @@
   It created backend/composer.json (FlightPHP and swagger-php, installed with Composer), the .htaccess that sends every request to index.php, and index.php with one error handler (400 for invalid input, 409 for a broken business rule, 500 with a general message), JSON answers for 404 and 405, and a test route GET /. It installed the libraries with XAMPP's PHP 8.2, because the default PHP on my computer is 8.5 and could have picked versions that don't run under XAMPP. It tested the routes through Apache and the error handler with test routes that throw on purpose.
   I kept it as generated.
 
+- Claude Code (same setup): wrote the services and REST routes for all six entities, following Readings 04 and 05.
+  Prompt: "(…) first create BaseService and the first entity end to end which will be ShelterService with ShelterRoutes.php", then one prompt per entity with its rules, e.g. "Create UserService and UserRoutes.php next. Rules: a unique email (409), the password hashed with password_hash(), password_hash never returned by the API, and roles user/vet/admin."
+  It created BaseService and one service per entity with validation, an allow-list of fields and the business rules (409 for a broken rule), one routes file per entity with full CRUD, and transactions for applying and reviewing adoption applications. Before each entity it read the M1 forms, which showed that the admin's "Add user" form had no password field; at my request it added one. It tested every route through Apache and restored the database after each test.
+  I chose the rules for each entity and kept the code as generated.
+
+- Claude Code (same setup): built the external API feature, the breed info from TheDogAPI and TheCatAPI.
+  Prompt: "Build the external API, meaning BreedService and GET /pets/{id}/breed-info, together with filling in breed_api_id for the 12 sample pets. (…)"
+  It looked up the breed ids in both APIs, filled them in pawfriends.sql and in the database, and wrote BreedService, which calls the API with a timeout and the key from config.php. If the API fails, the details go to the error log and the user gets a friendly message (503). It tested the 12 pets with the real APIs and every kind of failure with a fake API.
+  I kept it as generated.
+
+- Claude Code (same setup): wrote the OpenAPI documentation for every endpoint, with a Swagger UI page, following Reading 06.
+  Prompt: "(…) the OpenAPI documentation for every endpoint in one pass. That means backend/public/v1/docs/ with doc_setup.php (the schemas), one *Paths.php file per routes file, swagger.php and the Swagger UI page. Then give me test cases so I can check everything on the page itself by myself."
+  It documented all 37 endpoints with their request and response schemas and every status code they can return, checked that every route is documented, and gave me 28 test cases for the page.
+  I ran all 28 test cases myself. One expected value in the list was wrong (shelter 1 has 5 pets, not 6); the code was right. I kept the documentation as generated.
+
+- Claude Code (same setup, reviewer agent): reviewed all of Milestone 3 before the pull request.
+  Prompt: "(…) @agent-reviewer do your thing."
+  It confirmed that all Milestone 3 requirements are met, and reported five problems and several smaller suggestions.
+  I fixed two problems myself (cases below) and decided that only users may apply to adopt. Claude Code fixed the rest: the breed id when a pet's species changes, visits and vaccinations dated before the pet's birth, a maximum password length, and a few small points in the documentation. One finding was wrong (see below). I left one rare case (two admins approving at the same moment) for later.
+
 ### Where the AI was wrong
 - The error handler answered 200 with an empty body (backend skeleton).
   What was wrong: Claude Code wrote the error handler as in Reading 05, with Flight::json(). In FlightPHP 3.19, json() only prepares the answer, and after an exception nothing sends it, so a request with invalid data got 200 and an empty body instead of 400 and the error message.
@@ -215,3 +235,18 @@
   What was wrong: the check that ignores spaces at the start and end of text fields, written with Claude Code in Milestone 1, chose the fields by type="text". "Show password" changes a password field to type="text", so a shown password like " 1234567 " counted as 7 characters and was "too short", and the error stayed after hiding it again, so a valid password blocked the form.
   How it was noticed: Claude Code noticed it in Milestone 3 while adding a password field to the admin's user form, and I asked it to fix it.
   How it was fixed: password fields are now recognised by their autocomplete attribute, which doesn't change; Claude Code tested the old and the new version in a browser.
+
+- Wrong-type input answered 500 instead of 400 (services).
+  What was wrong: the validation helpers that Claude Code wrote called trim() directly on the request data. When a field was an array or true instead of text, for example {"name": ["Happy Paws"]}, PHP threw a TypeError, so the API answered 500 "Something went wrong on the server" instead of 400 with a clear message.
+  How it was noticed: the reviewer agent found it when I asked it to check all of Milestone 3, and Claude Code reproduced it (500, and a TypeError in the error log).
+  How I fixed it: I added validateTextValue() to BaseService, which accepts only text or numbers and otherwise throws an InvalidArgumentException (400), and used it in all the helpers and for next_due_date in VaccinationService. Claude Code retested it: arrays and true now get 400, and a missing field still gets "is required".
+
+- PHP errors could show server file paths (index.php).
+  What was wrong: Flight's error handler only starts in Flight::start(), after all the require_once lines in index.php. If one of them failed, for example on a fresh clone without config.php, PHP would print the error with the full file path whenever display_errors is on. It's off on my XAMPP, but it could be on another server.
+  How it was noticed: the reviewer agent found it in the same review.
+  How I fixed it: I added ini_set('display_errors', '0') at the top of index.php, before any require.
+
+- The reviewer agent reported a bug that wasn't there (external API).
+  What was wrong: the reviewer agent wrote, from memory and without checking, that the real breed APIs answer an unknown breed id with 200 and an empty object (or 400), so BreedService would answer 503 instead of "breed": null. It also said the breed id and life span in the Swagger schema had a different format than the real answers.
+  How it was noticed: Claude Code had tested the real APIs earlier. Both answer 404 for an unknown id, our API returned "breed": null for the id 99999, and the real answers have "id": "149" and "life_span": "10-12".
+  How it was fixed: nothing needed to change; I didn't apply the suggested fix.
