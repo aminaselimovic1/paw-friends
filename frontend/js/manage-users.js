@@ -7,9 +7,9 @@
 // (my-applications.js), sampleVetRecords and sampleVaccinations
 // (pet-details.js), capitalizeFirstLetter (pets.js) and resetForm (auth.js).
 
-// Same columns as the planned users table, without password_hash: a password
-// (even a hashed one) is never sent to the browser. phone and city are shown
-// on Profile; they aren't in the planned table yet (a schema decision for M2).
+// Same columns as the users table, without password_hash: a password
+// (even a hashed one) is never sent to the browser. phone and city are
+// optional columns of users (since M2); the Profile page shows them.
 // The emails match the demo login: admin@example.com = admin, emina.vet@... = vet.
 // The vets' ids match vet_id on the health records.
 const sampleUsers = [
@@ -124,6 +124,9 @@ function openUserForm(user) {
   $("#userName").val(isNew ? "" : user.name);
   $("#userEmail").val(isNew ? "" : user.email);
   $("#userRole").val(isNew ? "user" : user.role);
+  // The password field only for a new user; disabled = not validated, not sent
+  $("#userPasswordGroup").toggleClass("d-none", !isNew);
+  $("#userPassword").prop("disabled", !isNew);
   // You can't change your own role (otherwise the last admin could lock themselves out)
   $("#userRole").prop("disabled", isYou);
   $("#userRoleNote").toggleClass("d-none", !isYou);
@@ -175,7 +178,10 @@ $(document).on("submit", "#userForm", function (e) {
   const email = $("#userEmail").val().trim();
   const role = $("#userRole").val();
 
-  // Demo (M1): saved in sampleUsers. In M4: POST /users or PUT /users/{id}.
+  // Demo (M1): saved in sampleUsers. In M4: POST /users (with the password,
+  // which the backend stores only as a hash) or PUT /users/{id}.
+  // The demo checks the password but doesn't keep it: a password never goes
+  // into the browser's data.
   if (id === "") {
     sampleUsers.push({ id: getNextId(sampleUsers), name: name, email: email, role: role });
     showUserSaved(name + " was added.");

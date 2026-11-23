@@ -27,4 +27,14 @@ class AdoptionApplicationDao extends BaseDao
         $stmt->execute(['pet_id' => $petId]);
         return $stmt->fetchAll();
     }
+
+    // The applications one admin reviewed (deleting a user checks them)
+    public function getByReviewerId(int $reviewerId): array
+    {
+        $stmt = $this->connection->prepare(
+            'SELECT * FROM adoption_applications WHERE reviewed_by = :reviewed_by ORDER BY created_at DESC'
+        );
+        $stmt->execute(['reviewed_by' => $reviewerId]);
+        return $stmt->fetchAll();
+    }
 }

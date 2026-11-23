@@ -86,7 +86,12 @@ function checkTrimmedField(field) {
   field.setCustomValidity(tooShort ? "Too short" : "");
 }
 
-const trimmedFieldSelector = 'input[type="text"], input[type="tel"], textarea';
+// Password fields are skipped by their autocomplete ("current-password" or
+// "new-password"), not by their type: "Show password" turns a password field
+// into type="text", and it must still not be trimmed. (Before this, a shown
+// " 1234567 " counted as 7 characters, and the "Too short" error stayed after
+// hiding it again, so a valid password blocked the form.)
+const trimmedFieldSelector = 'input[type="text"]:not([autocomplete$="password"]), input[type="tel"], textarea';
 
 // Checks every text field of a form. Call it before form.checkValidity().
 function checkTrimmedFields(form) {

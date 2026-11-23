@@ -8,13 +8,18 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 
 ## Technology stack
 - Frontend: HTML, CSS, JavaScript, jQuery, Bootstrap 5, Bootstrap Icons, Leaflet with OpenStreetMap (the map on shelter details), single-page application (SPA)
-- Backend: PHP with FlightPHP (REST API), PDO, MySQL
-- Authentication: JWT. API documentation: OpenAPI (Swagger)
+- Backend: PHP 8.2+ with FlightPHP 3 (REST API, installed with Composer), PDO, MySQL
+- Authentication: JWT (from Milestone 4). API documentation: OpenAPI 3.0 with swagger-php (PHP 8 attributes) and Swagger UI
 - Local server: XAMPP
 
 ## Folder structure
 - frontend/: css/, js/, views/ (one HTML file per view), assets/ (images, icons)
-- backend/: routes/, services/, dao/ (Database.php, BaseDao.php and one DAO per table), middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data), test-dao.php (a manual test of the DAOs, run from the terminal; delete it before deploying in Milestone 5)
+- backend/:
+  - index.php (the front controller: registers the services, the error handlers and the route files) and .htaccess (sends every request that isn't a real file to index.php)
+  - composer.json and composer.lock (committed); vendor/ (not committed, created by composer install)
+  - routes/ (one XRoutes.php per resource), services/ (BaseService.php, one service per entity, BreedService.php for the external API, ExternalApiException.php), dao/ (Database.php, BaseDao.php and one DAO per table)
+  - public/v1/docs/ (the OpenAPI documentation: doc_setup.php with the API info and schemas, paths/ with one XPaths.php per routes file, swagger.php, and index.html = Swagger UI)
+  - middleware/, config/, logs/, database/ (pawfriends.sql: the schema and sample data), test-dao.php (a manual test of the DAOs, run from the terminal; delete it before deploying in Milestone 5)
 - docs/: AI_LOG.md and other documentation
 
 ## Frontend rules
@@ -29,7 +34,12 @@ External API: TheDogAPI / TheCatAPI. The pet details view shows breed info (temp
 - Only services call DAO classes. Routes never call DAO classes directly.
 - All SQL is in DAO classes and uses PDO prepared statements. Every DAO extends BaseDao.
 - The PDO connection is opened only in Database::getConnection().
-- Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 500).
+- Routes return JSON with correct HTTP status codes (200, 201, 400, 401, 403, 404, 405, 409, 500, 503).
+- A route only reads the input, calls one service method and answers with Flight::json(). Business rules belong in services.
+- Services validate every input and pass only allowed fields to the DAO (an allow-list). The API never returns password_hash.
+- Services report problems with exceptions, and Flight::map('error') in index.php turns them into answers: InvalidArgumentException -> 400, DomainException (a broken business rule) -> 409, ExternalApiException -> 503, anything else -> 500 with a general message (the details go to the error log).
+- Every route is documented in public/v1/docs/paths/ (one method per route, in the XPaths.php of its routes file), in the same change as the route.
+- Libraries must run on PHP 8.2 (XAMPP's version): run Composer with the PHP that runs the app.
 - Middleware is registered in Flight and reused, never copied into individual routes.
 - External API calls happen in a service, with a timeout; failures are written to the error log and return a user-friendly message.
 - Error responses never expose stack traces, SQL queries or file paths.

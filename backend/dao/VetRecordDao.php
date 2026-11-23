@@ -17,4 +17,14 @@ class VetRecordDao extends BaseDao
         $stmt->execute(['pet_id' => $petId]);
         return $stmt->fetchAll();
     }
+
+    // The visits one vet wrote, newest first (deleting a user checks them)
+    public function getByVetId(int $vetId): array
+    {
+        $stmt = $this->connection->prepare(
+            'SELECT * FROM vet_records WHERE vet_id = :vet_id ORDER BY visit_date DESC'
+        );
+        $stmt->execute(['vet_id' => $vetId]);
+        return $stmt->fetchAll();
+    }
 }

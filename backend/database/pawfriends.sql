@@ -131,31 +131,32 @@ INSERT INTO shelters (id, name, address, city, phone, email, description, openin
  'A rescue for cats of all ages, from playful kittens to calm seniors looking for a quiet home. Our cats live together in bright, cosy rooms, so you can see how they get along with others.',
  NULL, 44.7722, 17.1910);
 
--- breed_api_id stays empty until the breed info is added in Milestone 3
-INSERT INTO pets (id, shelter_id, name, species, breed_name, sex, birth_date, photo_url, status, description) VALUES
-(1, 1, 'Max', 'dog', 'Labrador Retriever', 'male', '2023-06-12', 'assets/images/pet-max.jpg', 'available',
+-- breed_api_id is the breed's id in TheDogAPI (a number) or TheCatAPI (4 letters),
+-- used for the breed info on the pet details page
+INSERT INTO pets (id, shelter_id, name, species, breed_name, breed_api_id, sex, birth_date, photo_url, status, description) VALUES
+(1, 1, 'Max', 'dog', 'Labrador Retriever', '149', 'male', '2023-06-12', 'assets/images/pet-max.jpg', 'available',
  'A friendly, energetic dog who loves long walks and playing fetch. Great with children.'),
-(2, 2, 'Luna', 'cat', 'British Shorthair', 'female', '2024-03-08', 'assets/images/pet-luna.jpg', 'pending',
+(2, 2, 'Luna', 'cat', 'British Shorthair', 'bsho', 'female', '2024-03-08', 'assets/images/pet-luna.jpg', 'pending',
  'A calm, affectionate cat who enjoys quiet afternoons on the windowsill. She loves gentle brushing.'),
-(3, 1, 'Rocky', 'dog', 'Beagle', 'male', '2025-05-20', 'assets/images/pet-rocky.jpg', 'pending',
+(3, 1, 'Rocky', 'dog', 'Beagle', '31', 'male', '2025-05-20', 'assets/images/pet-rocky.jpg', 'pending',
  'A curious, playful young dog who follows his nose everywhere. He would love an active family.'),
-(4, 2, 'Bella', 'dog', 'Golden Retriever', 'female', '2026-02-14', NULL, 'available',
+(4, 2, 'Bella', 'dog', 'Golden Retriever', '121', 'female', '2026-02-14', NULL, 'available',
  'A sweet, cuddly puppy who is learning her first commands. She gets along well with other dogs.'),
-(5, 4, 'Milo', 'cat', 'Siamese', 'male', '2026-04-03', NULL, 'available',
+(5, 4, 'Milo', 'cat', 'Siamese', 'siam', 'male', '2026-04-03', NULL, 'available',
  'A chatty little kitten full of energy. He loves chasing toys and then curling up on a warm lap.'),
-(6, 3, 'Daisy', 'dog', 'Border Collie', 'female', '2021-09-05', NULL, 'available',
+(6, 3, 'Daisy', 'dog', 'Border Collie', '50', 'female', '2021-09-05', NULL, 'available',
  'A smart, hard-working dog who needs daily exercise and games. Best with an experienced owner.'),
-(7, 4, 'Oliver', 'cat', 'Maine Coon', 'male', '2017-11-22', NULL, 'available',
+(7, 4, 'Oliver', 'cat', 'Maine Coon', 'mcoo', 'male', '2017-11-22', NULL, 'available',
  'A gentle senior cat who loves naps and soft blankets. He would be happiest in a quiet home.'),
-(8, 1, 'Nala', 'cat', 'Persian', 'female', '2020-07-30', NULL, 'pending',
+(8, 1, 'Nala', 'cat', 'Persian', 'pers', 'female', '2020-07-30', NULL, 'pending',
  'A shy but loving cat who warms up quickly once she trusts you. Perfect for a calm household.'),
-(9, 3, 'Charlie', 'dog', 'German Shepherd', 'male', '2017-01-10', NULL, 'pending',
+(9, 3, 'Charlie', 'dog', 'German Shepherd', '115', 'male', '2017-01-10', NULL, 'pending',
  'A loyal, well-trained older dog who knows many commands. He enjoys short walks and lots of attention.'),
-(10, 1, 'Mia', 'cat', 'Bengal', 'female', '2025-08-15', NULL, 'pending',
+(10, 1, 'Mia', 'cat', 'Bengal', 'beng', 'female', '2025-08-15', NULL, 'pending',
  'A playful, adventurous cat who loves climbing and exploring. She needs plenty of toys.'),
-(11, 1, 'Buddy', 'dog', 'Cocker Spaniel', 'male', '2022-04-18', NULL, 'adopted',
+(11, 1, 'Buddy', 'dog', 'Cocker Spaniel', '86', 'male', '2022-04-18', NULL, 'adopted',
  'A happy, gentle dog who loves everyone he meets. His tail never stops wagging.'),
-(12, 4, 'Coco', 'cat', 'Ragdoll', 'female', '2026-03-01', NULL, 'adopted',
+(12, 4, 'Coco', 'cat', 'Ragdoll', 'ragd', 'female', '2026-03-01', NULL, 'adopted',
  'A fluffy, relaxed kitten who loves being held. She purrs as soon as you pick her up.');
 
 -- reviewed_by 1 is the admin, Selma

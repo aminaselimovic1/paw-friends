@@ -1,0 +1,6 @@
+# Send every request that is not a real file (-f) or folder (-d) to index.php,
+# so that FlightPHP can route it. QSA keeps the query string (?species=dog).
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

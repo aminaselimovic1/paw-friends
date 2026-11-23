@@ -66,4 +66,22 @@ class BaseDao
         $stmt->execute(['id' => $id]);
         return $stmt->rowCount() > 0;
     }
+
+    // A transaction: several changes that are saved all together or not at
+    // all. Every DAO shares the one connection from Database::getConnection(),
+    // so a transaction started here also covers the other DAOs' queries.
+    public function beginTransaction(): void
+    {
+        $this->connection->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->connection->commit();
+    }
+
+    public function rollBack(): void
+    {
+        $this->connection->rollBack();
+    }
 }
